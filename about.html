@@ -90,11 +90,95 @@
         async function displayAboutContent() {
             try {
                 // Fetch all required data
-                const [about, achievements, leadership] = await Promise.all([
-                    fetchSheetData('About'),
-                    fetchSheetData('Achievements'),
-                    fetchSheetData('Members')
-                ]);
+                let about = [];
+                let achievements = [];
+                let leadership = [];
+                
+                try {
+                    // Try to fetch from Google Sheets
+                    [about, achievements, leadership] = await Promise.all([
+                        fetchSheetData('About'),
+                        fetchSheetData('Achievements'),
+                        fetchSheetData('Members')
+                    ]);
+                    
+                    console.log('Data from sheets - About:', about, 'Achievements:', achievements, 'Leadership:', leadership);
+                    
+                    // Check if any data is empty
+                    if (!about || about.length === 0 || !achievements || achievements.length === 0 || !leadership || leadership.length === 0) {
+                        throw new Error('Missing data from Google Sheets');
+                    }
+                } catch (sheetError) {
+                    console.warn('Failed to load data from Google Sheets, using local data:', sheetError);
+                    
+                    // Fallback data for about
+                    about = [
+                        {
+                            type: 'history',
+                            content: '<p>Nervosa was founded in 2022 by a group of dedicated players who wanted to create a supportive and competitive environment for all types of players. From humble beginnings with just five members, we have grown into one of the server\'s most respected guilds with over 80 active members.</p><p>Our guild has participated in every War of Emperium since our founding, gradually improving our strategy and teamwork. In 2023, we captured our first castle and have successfully defended it for over 6 months, establishing ourselves as a formidable force on the server.</p>'
+                        },
+                        {
+                            type: 'mission',
+                            content: '<p>Our mission is to create a welcoming community where players of all experience levels can grow and enjoy the game together. We believe in:</p><ul><li><strong>Community First:</strong> Supporting each other both in-game and beyond</li><li><strong>Balanced Gameplay:</strong> Embracing both casual and competitive aspects of the game</li><li><strong>Knowledge Sharing:</strong> Helping new players learn and veterans improve</li><li><strong>Respect:</strong> Maintaining a positive atmosphere free from toxicity</li></ul>'
+                        }
+                    ];
+                    
+                    // Fallback data for achievements
+                    achievements = [
+                        {
+                            title: "First Castle Capture",
+                            date: "2023-06-15",
+                            description: "Successfully captured and held our first WoE castle, marking our emergence as a top-tier guild."
+                        },
+                        {
+                            title: "Server First MVP",
+                            date: "2023-08-22",
+                            description: "Our raid team became the first on the server to defeat the new Immortal Heart MVP boss."
+                        },
+                        {
+                            title: "Community Service Award",
+                            date: "2023-11-10",
+                            description: "Recognized by server administrators for our assistance to new players and positive community impact."
+                        },
+                        {
+                            title: "PvP Tournament Champions",
+                            date: "2024-01-20",
+                            description: "Won the winter server-wide PvP tournament, demonstrating our members' skill and teamwork."
+                        }
+                    ];
+                    
+                    // Fallback data for leadership
+                    leadership = [
+                        {
+                            name: "Lavirosa",
+                            role: "Guild Leader",
+                            class: "Archbishop",
+                            profile_image: "images/Archbishop.png",
+                            description: "Founder and visionary leader of Nervosa. Specializes in support and healing."
+                        },
+                        {
+                            name: "Heist",
+                            role: "Vice Guild Leader",
+                            class: "Royal Guard",
+                            profile_image: "images/RoyalGuard.png",
+                            description: "Primary tank and strategist for guild activities. Manages day-to-day operations."
+                        },
+                        {
+                            name: "Frost",
+                            role: "Admin",
+                            class: "Warlock",
+                            profile_image: "images/Warlock.png",
+                            description: "Technical support and website management. Also leads MVP hunts."
+                        },
+                        {
+                            name: "Shadow",
+                            role: "Officer",
+                            class: "Guillotine Cross",
+                            profile_image: "images/Guillotine Cross.png",
+                            description: "PvP specialist and trainer. Organizes weekly practice sessions."
+                        }
+                    ];
+                }
 
                 // Display history
                 const historySection = document.getElementById('guild-history');
@@ -132,7 +216,7 @@
                 const leadershipGrid = document.getElementById('leadership-grid');
                 console.log('All members:', leadership);
                 const leaders = leadership.filter(member => {
-                    const role = member.role.toLowerCase();
+                    const role = member.role ? member.role.toLowerCase() : '';
                     console.log('Checking member:', member.name, 'Role:', member.role);
                     return role === 'admin' || role === 'guild leader' || role === 'vice guild leader' || role === 'officer';
                 });
@@ -146,8 +230,8 @@
                         'admin': 3,
                         'officer': 4
                     };
-                    const roleA = a.role.toLowerCase();
-                    const roleB = b.role.toLowerCase();
+                    const roleA = a.role ? a.role.toLowerCase() : '';
+                    const roleB = b.role ? b.role.toLowerCase() : '';
                     return (roleOrder[roleA] || 99) - (roleOrder[roleB] || 99);
                 });
 
@@ -189,7 +273,7 @@
 
                 // Create HTML for leadership cards
                 leadershipGrid.innerHTML = leaders.map(leader => {
-                    const roleClass = leader.role.toLowerCase().replace(/\s+/g, '-');
+                    const roleClass = leader.role ? leader.role.toLowerCase().replace(/\s+/g, '-') : '';
                     console.log(`Processing leader: ${leader.name}, Profile image: ${leader.profile_image}`);
                     
                     // If profile_image is undefined or empty, assign a default based on role
@@ -197,7 +281,7 @@
                     if (!imageUrl || imageUrl.trim() === '') {
                         // Use the member's class instead of role for default images
                         if (leader.class) {
-                            imageUrl = `images/${leader.class.replace(/ /g, '')}.png`;
+                            imageUrl = `images/${leader.class}.png`;
                             console.log(`Using class-based image for ${leader.name}:`, imageUrl);
                         } else {
                             // Fallback to Imgur image if no class is available
@@ -210,16 +294,16 @@
                     console.log(`Final image URL for ${leader.name}:`, finalImageUrl);
                     
                     return `
-                    <div class="member-card leadership animate-on-scroll" data-role="${leader.role.toLowerCase()}">
+                    <div class="member-card leadership animate-on-scroll" data-role="${roleClass}">
                         <img src="${finalImageUrl}" 
                              crossorigin="anonymous"
                              referrerpolicy="no-referrer"
                              onerror="this.onerror=null; this.src='https://i.imgur.com/wR44TjF.png';" 
-                             alt="${leader.name}" 
+                             alt="${leader.name || 'Guild Member'}" 
                              class="member-avatar">
-                        <h3>${leader.name}</h3>
-                        <p class="member-role">${leader.role}</p>
-                        <p class="member-class">${leader.class}</p>
+                        <h3>${leader.name || 'Guild Member'}</h3>
+                        <p class="member-role">${leader.role || 'Member'}</p>
+                        <p class="member-class">${leader.class || ''}</p>
                         <p>${leader.description || ''}</p>
                     </div>`;
                 }).join('');

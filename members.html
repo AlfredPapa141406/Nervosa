@@ -85,11 +85,104 @@
 
         async function displayMembers() {
             try {
-                const members = await fetchSheetData('Members');
+                // Try to fetch from Google Sheets
+                let members = [];
+                try {
+                    members = await fetchSheetData('Members');
+                    console.log('Members data from sheet:', members);
+                    
+                    if (!members || members.length === 0) {
+                        throw new Error('No members data from Google Sheets');
+                    }
+                } catch (sheetError) {
+                    console.warn('Failed to load members from Google Sheets, using local data:', sheetError);
+                    
+                    // Fallback data for members
+                    members = [
+                        {
+                            name: "Lavirosa",
+                            role: "Guild Leader",
+                            class: "Archbishop",
+                            level: "130",
+                            division: "Support",
+                            profile_image: "images/Archbishop.png",
+                            description: "Founder and visionary leader of Nervosa. Specializes in support and healing."
+                        },
+                        {
+                            name: "Heist",
+                            role: "Vice Guild Leader",
+                            class: "Royal Guard",
+                            level: "125",
+                            division: "Tanking",
+                            profile_image: "images/Royal Guard.png",
+                            description: "Primary tank and strategist for guild activities. Manages day-to-day operations."
+                        },
+                        {
+                            name: "Frost",
+                            role: "Admin",
+                            class: "Warlock",
+                            level: "127",
+                            division: "DPS",
+                            profile_image: "images/Warlock.png",
+                            description: "Technical support and website management. Also leads MVP hunts."
+                        },
+                        {
+                            name: "Shadow",
+                            role: "Officer",
+                            class: "Guillotine Cross",
+                            level: "123",
+                            division: "DPS",
+                            profile_image: "images/Guillotine Cross.png",
+                            description: "PvP specialist and trainer. Organizes weekly practice sessions."
+                        },
+                        {
+                            name: "Mirage",
+                            role: "Member",
+                            class: "Ranger",
+                            level: "120",
+                            division: "DPS"
+                        },
+                        {
+                            name: "Harmony",
+                            role: "Member",
+                            class: "Minstrel",
+                            level: "118",
+                            division: "Support"
+                        },
+                        {
+                            name: "Titan",
+                            role: "Member",
+                            class: "Rune Knight",
+                            level: "122",
+                            division: "Tanking"
+                        },
+                        {
+                            name: "Whisper",
+                            role: "Member",
+                            class: "Wanderer",
+                            level: "115",
+                            division: "Support"
+                        },
+                        {
+                            name: "Sentry",
+                            role: "Member",
+                            class: "Mechanic",
+                            level: "119",
+                            division: "DPS"
+                        },
+                        {
+                            name: "Enigma",
+                            role: "Member",
+                            class: "Sorcerer",
+                            level: "117",
+                            division: "DPS"
+                        }
+                    ];
+                }
                 
                 // Filter and sort leadership members
                 const leaders = members.filter(member => {
-                    const role = member.role.toLowerCase();
+                    const role = member.role ? member.role.toLowerCase() : '';
                     return role === 'guild leader' || role === 'vice guild leader' || role === 'admin' || role === 'officer';
                 });
 
@@ -101,14 +194,14 @@
                         'admin': 3,
                         'officer': 4
                     };
-                    const roleA = a.role.toLowerCase();
-                    const roleB = b.role.toLowerCase();
+                    const roleA = a.role ? a.role.toLowerCase() : '';
+                    const roleB = b.role ? b.role.toLowerCase() : '';
                     return (roleOrder[roleA] || 99) - (roleOrder[roleB] || 99);
                 });
 
                 // Filter regular members (non-leadership)
                 const regularMembers = members.filter(member => {
-                    const role = member.role.toLowerCase();
+                    const role = member.role ? member.role.toLowerCase() : '';
                     return role !== 'guild leader' && role !== 'vice guild leader' && role !== 'admin' && role !== 'officer';
                 });
 
@@ -151,7 +244,7 @@
                 // Display leadership
                 const leadershipContainer = document.getElementById('leadership-members');
                 leadershipContainer.innerHTML = leaders.map(member => {
-                    const roleClass = member.role.toLowerCase().replace(/\s+/g, '-');
+                    const roleClass = member.role ? member.role.toLowerCase().replace(/\s+/g, '-') : '';
                     console.log(`Processing leader: ${member.name}, Profile image: ${member.profile_image}`);
                     
                     // If profile_image is undefined or empty, assign a default based on role
@@ -159,7 +252,7 @@
                     if (!imageUrl || imageUrl.trim() === '') {
                         // Use the member's class instead of role for default images
                         if (member.class) {
-                            imageUrl = `images/${member.class.replace(/ /g, '')}.png`;
+                            imageUrl = `images/${member.class}.png`;
                             console.log(`Using class-based image for ${member.name}:`, imageUrl);
                         } else {
                             // Fallback to Imgur image if no class is available
@@ -172,18 +265,18 @@
                     console.log(`Final image URL for ${member.name}:`, finalImageUrl);
                     
                     return `
-                    <div class="member-card leadership" data-role="${member.role.toLowerCase()}">
+                    <div class="member-card leadership" data-role="${roleClass}">
                         <img src="${finalImageUrl}" 
                              crossorigin="anonymous"
                              referrerpolicy="no-referrer"
                              onerror="this.onerror=null; this.src='https://i.imgur.com/wR44TjF.png';" 
-                             alt="${member.name}" 
+                             alt="${member.name || 'Guild Member'}" 
                              class="member-avatar">
-                        <h3>${member.name}</h3>
-                        <p class="member-role">${member.role}</p>
-                        <p class="member-class">${member.class}</p>
-                        <p class="member-level">Level ${member.level}</p>
-                        <p class="member-division">${member.division}</p>
+                        <h3>${member.name || 'Guild Member'}</h3>
+                        <p class="member-role">${member.role || 'Member'}</p>
+                        <p class="member-class">${member.class || ''}</p>
+                        <p class="member-level">Level ${member.level || '1'}</p>
+                        <p class="member-division">${member.division || ''}</p>
                         <p>${member.description || ''}</p>
                     </div>`;
                 }).join('');
@@ -198,7 +291,7 @@
                     if (!imageUrl || imageUrl.trim() === '') {
                         // Use the member's class instead of role for default images
                         if (member.class) {
-                            imageUrl = `images/${member.class.replace(/ /g, '')}.png`;
+                            imageUrl = `images/${member.class}.png`;
                             console.log(`Using class-based image for ${member.name}:`, imageUrl);
                         } else {
                             // Fallback to Imgur image if no class is available
@@ -216,12 +309,12 @@
                              crossorigin="anonymous"
                              referrerpolicy="no-referrer"
                              onerror="this.onerror=null; this.src='https://i.imgur.com/wR44TjF.png';" 
-                             alt="${member.name}" 
+                             alt="${member.name || 'Guild Member'}" 
                              class="member-avatar">
-                        <h3>${member.name}</h3>
-                        <p class="member-class">${member.class}</p>
-                        <p class="member-level">Level ${member.level}</p>
-                        <p class="member-division">${member.division}</p>
+                        <h3>${member.name || 'Guild Member'}</h3>
+                        <p class="member-class">${member.class || ''}</p>
+                        <p class="member-level">Level ${member.level || '1'}</p>
+                        <p class="member-division">${member.division || ''}</p>
                     </div>`;
                 }).join('');
 

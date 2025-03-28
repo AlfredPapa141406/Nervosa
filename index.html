@@ -410,13 +410,116 @@
                 const loadingOverlay = document.getElementById('loading');
                 loadingOverlay.classList.remove('hidden');
 
-                // Fetch all data
-                const [hero, features, stats, news] = await Promise.all([
-                    fetchSheetData('Hero'),
-                    fetchSheetData('Features'),
-                    fetchSheetData('Stats'),
-                    fetchSheetData('News')
-                ]);
+                // Default/fallback data
+                let hero = [];
+                let features = [];
+                let stats = [];
+                let news = [];
+
+                try {
+                    // Fetch all data from Google Sheets
+                    [hero, features, stats, news] = await Promise.all([
+                        fetchSheetData('Hero'),
+                        fetchSheetData('Features'),
+                        fetchSheetData('Stats'),
+                        fetchSheetData('News')
+                    ]);
+                    
+                    console.log('Home data loaded from sheets:', { hero, features, stats, news });
+                    
+                    // Check if any data is missing
+                    if (!hero || !hero.length || !features || !features.length || !stats || !stats.length || !news || !news.length) {
+                        console.warn('Some data is missing from Google Sheets, using fallback data');
+                        throw new Error('Incomplete data from Google Sheets');
+                    }
+                } catch (error) {
+                    console.warn('Error fetching data from Google Sheets, using fallback data:', error);
+                    
+                    // Fallback hero data
+                    hero = [{
+                        title: 'NERVOSA',
+                        subtitle: 'Elite Gaming Community',
+                        members_count: '50+',
+                        members_label: 'Active Members',
+                        mvp_count: '1000+',
+                        mvp_label: 'MVP Kills',
+                        woe_count: '25+',
+                        woe_label: 'WoE Victories',
+                        cta_text: 'Join Now',
+                        cta_link: 'contact.html'
+                    }];
+                    
+                    // Fallback features data
+                    features = [
+                        {
+                            title: 'Weekly Events',
+                            description: 'Join our organized weekly events including MVP hunts, dungeon runs, and War of Emperium battles.'
+                        },
+                        {
+                            title: 'Active Community',
+                            description: 'Be part of a friendly and active community with players ready to help and participate in group activities.'
+                        },
+                        {
+                            title: 'Newbie Support',
+                            description: 'New to the game? Our experienced members provide guidance, equipment, and training for newcomers.'
+                        },
+                        {
+                            title: 'Guild Housing',
+                            description: 'Access our fully upgraded guild hall with all facilities and amenities for guild members.'
+                        },
+                        {
+                            title: 'PvP Training',
+                            description: 'Regular practice sessions and coaching to improve your PvP skills with specialized builds and strategies.'
+                        },
+                        {
+                            title: 'Resource Sharing',
+                            description: 'Share resources, equipment, and materials among guild members to help everyone progress.'
+                        }
+                    ];
+                    
+                    // Fallback stats data
+                    stats = [
+                        {
+                            title: 'Total Members',
+                            value: '57',
+                            description: 'Active players across multiple classes and roles'
+                        },
+                        {
+                            title: 'Average Level',
+                            value: '123',
+                            description: 'Our members are experienced and well-equipped'
+                        },
+                        {
+                            title: 'Guild Castles',
+                            value: '2',
+                            description: 'Currently controlling two castles in WoE'
+                        },
+                        {
+                            title: 'Weekly Events',
+                            value: '12+',
+                            description: 'Organized activities every week for members'
+                        }
+                    ];
+                    
+                    // Fallback news data
+                    news = [
+                        {
+                            date: '2024-05-01',
+                            title: 'Summer Festival Preparation',
+                            content: 'The annual summer festival is approaching! Join us in preparing special events and activities for the server-wide celebration.'
+                        },
+                        {
+                            date: '2024-04-15',
+                            title: 'New Castle Conquered',
+                            content: 'Our guild has successfully captured a second castle in last week\'s WoE! Thanks to everyone who participated in this achievement.'
+                        },
+                        {
+                            date: '2024-04-02',
+                            title: 'Recruitment Drive Success',
+                            content: 'We welcomed 12 new members to our guild last month! Special training sessions will be held to help them integrate into our teams.'
+                        }
+                    ];
+                }
 
                 // Display hero content
                 if (hero && hero.length > 0) {
