@@ -18,50 +18,133 @@ class SheetsManager {
 
             console.log(`Fetching ${sheetName} data from Google Sheets...`);
             
-            // Construct the URL
+            // Construct the URL with CORS mode
             const url = `${this.baseUrl}/${CONFIG.SHEETS_ID}/values/${sheetName}?key=${CONFIG.API_KEY}`;
             console.log(`Request URL: ${url}`);
 
-            // Fetch data
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
-            }
-
-            const result = await response.json();
-            console.log(`Raw response for ${sheetName}:`, result);
-
-            if (!result.values || result.values.length < 2) {
-                console.warn(`Warning: ${sheetName} sheet has insufficient data`);
-                return [];
-            }
-
-            // Convert sheet data to array of objects
-            const headers = result.values[0].map(header => header.toLowerCase().trim());
-            console.log(`Headers for ${sheetName}:`, headers);
-
-            const data = result.values.slice(1).map(row => {
-                const item = {};
-                headers.forEach((header, index) => {
-                    item[header] = row[index] || '';
+            // Use the JSONP approach for cross-origin requests to avoid CORS issues
+            // This is specifically for GitHub Pages which has stricter CORS policies
+            if (window.location.hostname.includes('github.io')) {
+                console.log('Detected GitHub Pages, using alternative fetch method...');
+                
+                // Try using fetch with CORS mode first
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Origin': window.location.origin
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log(`Raw response for ${sheetName}:`, result);
+                    
+                    if (!result.values || result.values.length < 2) {
+                        console.warn(`Warning: ${sheetName} sheet has insufficient data`);
+                        return [];
+                    }
+                    
+                    // Process the data
+                    const data = this.processSheetData(result.values, sheetName);
+                    
+                    // Cache the results
+                    this.cache.set(sheetName, {
+                        data,
+                        timestamp: Date.now()
+                    });
+                    
+                    return data;
+                } catch (corsError) {
+                    console.warn('CORS fetch failed, trying Apps Script proxy...', corsError);
+                    
+                    // If CORS fails, try using the Apps Script as a proxy
+                    const proxyUrl = `${CONFIG.APPS_SCRIPT_URL}?sheet=${sheetName}&action=get`;
+                    console.log(`Using proxy URL: ${proxyUrl}`);
+                    
+                    const proxyResponse = await fetch(proxyUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (!proxyResponse.ok) {
+                        throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
+                    }
+                    
+                    const proxyResult = await proxyResponse.json();
+                    console.log(`Proxy response for ${sheetName}:`, proxyResult);
+                    
+                    if (!proxyResult.values || proxyResult.values.length < 2) {
+                        console.warn(`Warning: ${sheetName} sheet has insufficient data from proxy`);
+                        return [];
+                    }
+                    
+                    // Process the data
+                    const data = this.processSheetData(proxyResult.values, sheetName);
+                    
+                    // Cache the results
+                    this.cache.set(sheetName, {
+                        data,
+                        timestamp: Date.now()
+                    });
+                    
+                    return data;
+                }
+            } else {
+                // Standard fetch for local development
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
+                }
+    
+                const result = await response.json();
+                console.log(`Raw response for ${sheetName}:`, result);
+    
+                if (!result.values || result.values.length < 2) {
+                    console.warn(`Warning: ${sheetName} sheet has insufficient data`);
+                    return [];
+                }
+    
+                // Process the data
+                const data = this.processSheetData(result.values, sheetName);
+                
+                // Cache the results
+                this.cache.set(sheetName, {
+                    data,
+                    timestamp: Date.now()
                 });
-                return item;
-            });
-
-            // Cache the results
-            this.cache.set(sheetName, {
-                data,
-                timestamp: Date.now()
-            });
-
-            console.log(`Processed ${data.length} rows for ${sheetName}`);
-            return data;
-
+                
+                return data;
+            }
         } catch (error) {
             console.error(`Error fetching ${sheetName} data:`, error);
             throw new Error(`Failed to fetch ${sheetName} data: ${error.message}`);
         }
+    }
+    
+    processSheetData(values, sheetName) {
+        // Convert sheet data to array of objects
+        const headers = values[0].map(header => header.toLowerCase().trim());
+        console.log(`Headers for ${sheetName}:`, headers);
+
+        const data = values.slice(1).map(row => {
+            const item = {};
+            headers.forEach((header, index) => {
+                item[header] = row[index] || '';
+            });
+            return item;
+        });
+        
+        console.log(`Processed ${data.length} rows for ${sheetName}`);
+        return data;
     }
 
     async saveApplicationData(data) {
@@ -84,6 +167,7 @@ class SheetsManager {
 
             // Convert data to URL-encoded form data
             const params = new URLSearchParams();
+            params.append('action', 'save');
             Object.entries(formData).forEach(([key, value]) => {
                 params.append(key, value);
             });
@@ -100,7 +184,7 @@ class SheetsManager {
             console.log('Form submitted successfully');
             
             // Check if the data was actually saved by making a GET request
-            const checkResponse = await fetch(url, {
+            const checkResponse = await fetch(`${url}?action=verify`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json'
