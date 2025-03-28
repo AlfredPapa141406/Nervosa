@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background-color: #dff0d8; color: #3c763d; }
+        .error { background-color: #f2dede; color: #a94442; }
+        .data-section { margin: 20px 0; padding: 10px; border: 1px solid #ddd; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Google Sheets Connection Test</h1>
+    
+    <div id="connection-status"></div>
+    
+    <div class="data-section">
+        <h2>Members Data</h2>
+        <pre id="members-data">Loading...</pre>
+    </div>
+
+    <div class="data-section">
+        <h2>Events Data</h2>
+        <pre id="events-data">Loading...</pre>
+    </div>
+
+    <div class="data-section">
+        <h2>News Data</h2>
+        <pre id="news-data">Loading...</pre>
+    </div>
+
+    <script type="module">
+        import sheetsManager from './sheets.js';
+        import CONFIG from './config.js';
+
+        async function testConnection() {
+            const statusDiv = document.getElementById('connection-status');
+            
+            try {
+                // Test configuration
+                if (!CONFIG.SHEETS_ID || !CONFIG.API_KEY) {
+                    throw new Error('Missing Sheet ID or API Key in config');
+                }
+
+                // Test Members sheet
+                const members = await sheetsManager.getMembers();
+                document.getElementById('members-data').textContent = 
+                    JSON.stringify(members, null, 2);
+
+                // Test Events sheet
+                const events = await sheetsManager.getEvents();
+                document.getElementById('events-data').textContent = 
+                    JSON.stringify(events, null, 2);
+
+                // Test News sheet
+                const news = await sheetsManager.getNews();
+                document.getElementById('news-data').textContent = 
+                    JSON.stringify(news, null, 2);
+
+                // Show success message
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Connection Successful! Data loaded from Google Sheets.';
+
+            } catch (error) {
+                // Show error message
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Connection Error: ' + error.message;
+                console.error('Connection test failed:', error);
+            }
+        }
+
+        // Run the test when page loads
+        testConnection();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nervosa Guild - Divisions</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .logo img {
+            height: 80px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(0, 225, 255, 0.5));
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="Nervosa_Logo.png" alt="Nervosa Guild Logo">
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="divisions.html" class="active">Divisions</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="divisions-section">
+            <h1>Guild Divisions</h1>
+            <p class="section-description">Explore our specialized divisions, each focused on different aspects of the game.</p>
+            
+            <div id="loading" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading divisions...</p>
+            </div>
+
+            <div id="error" class="error-message" style="display: none;"></div>
+            
+            <div id="divisions-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="members.html">Members</a></li>
+                    <li><a href="divisions.html">Divisions</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Discord: NervosaGuild</p>
+                <p>Email: contact@nervosaguild.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">YouTube</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Nervosa Guild. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="divisions.js"></script>
+</body>
+</html> 

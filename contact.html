@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Nervosa Guild</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .contact-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .contact-form {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .contact-form h2 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 10px var(--primary-color);
+            position: relative;
+            text-transform: uppercase;
+        }
+
+        .contact-form h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Add specific width control for character name and discord fields */
+        .form-group:nth-child(1),
+        .form-group:nth-child(3) {
+            grid-column: 1;
+        }
+
+        .form-group:nth-child(2),
+        .form-group:nth-child(4) {
+            grid-column: 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: var(--primary-color);
+            margin-left: 0.25rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0, 225, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Add right spacing for Discord username field */
+        .form-group input[type="text"]#discord {
+            width: 90%;
+        }
+
+        /* Add right spacing for textareas */
+        .form-group textarea#experience,
+        .form-group textarea#message {
+            width: 95%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 225, 255, 0.2);
+        }
+
+        .form-group select[multiple] {
+            height: 120px;
+        }
+
+        .form-group select option {
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-button {
+            grid-column: 1 / -1;
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            background: var(--primary-color);
+            color: var(--background-color);
+            box-shadow: 0 0 20px rgba(0, 225, 255, 0.4);
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(0, 225, 255, 0.4),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .submit-button:hover::before {
+            left: 100%;
+        }
+
+        .form-message {
+            display: none;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .form-message.success {
+            display: block;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .form-message.error {
+            display: block;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .class-description {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+        }
+        .class-info {
+            color: var(--text-color);
+        }
+        .class-info p {
+            margin: 0.5rem 0;
+        }
+        .class-info strong {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading"></div>
+    <header>
+        <div class="logo">
+            <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
+        </div>
+        <h1>Contact Nervosa Guild</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="contact-content">
+            <div id="join-info" class="content-section">
+                <h2>Join Our Guild</h2>
+                <!-- Join info will be loaded here -->
+            </div>
+
+            <div class="contact-form">
+                <h2>Application Form</h2>
+                <form id="application-form" class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Character Name <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="class">Character Class <span class="required">*</span></label>
+                        <select id="class" name="class" required>
+                            <option value="">Select a class</option>
+                            <!-- Classes will be loaded here -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="level">Character Level <span class="required">*</span></label>
+                        <input type="number" id="level" name="level" min="1" max="999" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discord">Discord Username <span class="required">*</span></label>
+                        <input type="text" id="discord" name="discord" placeholder="username#0000" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="experience">Previous Guild Experience</label>
+                        <textarea id="experience" name="experience" rows="4" 
+                                placeholder="Tell us about your previous guild experience..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="interests">Guild Activities Interest <span class="required">*</span></label>
+                        <select id="interests" name="interests" multiple required>
+                            <!-- Interests will be loaded here -->
+                        </select>
+                        <small>Hold Ctrl/Cmd to select multiple activities</small>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="message">Why do you want to join Nervosa? <span class="required">*</span></label>
+                        <textarea id="message" name="message" rows="4" required
+                                placeholder="Tell us why you'd like to join our guild..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button">Submit Application</button>
+                </form>
+                <div id="form-message" class="form-message"></div>
+            </div>
+
+            <div class="contact-info">
+                <h2>Other Ways to Contact Us</h2>
+                <div id="contact-methods">
+                    <!-- Contact methods will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="members.html">Members</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="contact.html">Join Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Discord: Nervosa Guild</p>
+                <p>Email: contact@nervosaguild.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Nervosa. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="sheets.js"></script>
+    <script type="module">
+        import { fetchSheetData, saveApplicationData } from './sheets.js';
+
+        async function displayContactContent() {
+            try {
+                // Fetch required data
+                const [contact, classes, activities] = await Promise.all([
+                    fetchSheetData('Contact'),
+                    fetchSheetData('Classes'),
+                    fetchSheetData('Activities')
+                ]);
+
+                // Display join info
+                const joinInfo = document.getElementById('join-info');
+                const info = contact.find(section => section.type === 'join_info');
+                if (info) {
+                    joinInfo.innerHTML += `
+                        <div class="content-text animate-on-scroll">
+                            ${info.content}
+                        </div>
+                    `;
+                }
+
+                // Populate class select
+                const classSelect = document.getElementById('class');
+                classSelect.innerHTML = `
+                    <option value="">Select a class</option>
+                    ${classes.map(cls => `
+                        <option value="${cls.name}" 
+                                data-description="${cls.description || ''}" 
+                                data-role="${cls.role || ''}" 
+                                data-specialization="${cls.specialization || ''}">
+                            ${cls.name} - ${cls.role || ''}
+                        </option>
+                    `).join('')}
+                `;
+
+                // Add class description display
+                const classDescription = document.createElement('div');
+                classDescription.id = 'class-description';
+                classDescription.className = 'class-description';
+                classSelect.parentNode.insertBefore(classDescription, classSelect.nextSibling);
+
+                // Add event listener for class selection
+                classSelect.addEventListener('change', (e) => {
+                    const selectedOption = e.target.options[e.target.selectedIndex];
+                    const description = selectedOption.dataset.description;
+                    const role = selectedOption.dataset.role;
+                    const specialization = selectedOption.dataset.specialization;
+                    
+                    if (description || role || specialization) {
+                        classDescription.innerHTML = `
+                            <div class="class-info">
+                                ${role ? `<p><strong>Role:</strong> ${role}</p>` : ''}
+                                ${specialization ? `<p><strong>Specialization:</strong> ${specialization}</p>` : ''}
+                                ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
+                            </div>
+                        `;
+                        classDescription.style.display = 'block';
+                    } else {
+                        classDescription.style.display = 'none';
+                    }
+                });
+
+                // Populate interests select
+                const interestsSelect = document.getElementById('interests');
+                interestsSelect.innerHTML = activities.map(activity => `
+                    <option value="${activity.name}">${activity.name}</option>
+                `).join('');
+
+                // Display contact methods
+                const contactMethods = document.getElementById('contact-methods');
+                const methods = contact.filter(section => section.type === 'contact_method');
+                contactMethods.innerHTML = methods.map(method => `
+                    <div class="contact-method animate-on-scroll">
+                        <h3>${method.title}</h3>
+                        <p>${method.content}</p>
+                    </div>
+                `).join('');
+
+                // Handle form submission
+                const form = document.getElementById('application-form');
+                const formMessage = document.getElementById('form-message');
+                const submitButton = form.querySelector('button[type="submit"]');
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    try {
+                        // Disable submit button while processing
+                        submitButton.disabled = true;
+                        submitButton.textContent = 'Submitting...';
+                        formMessage.className = 'form-message';
+                        formMessage.innerHTML = 'Submitting application...';
+                        
+                        // Get form data
+                        const formData = new FormData(form);
+                        const data = Object.fromEntries(formData.entries());
+                        data.interests = Array.from(formData.getAll('interests')).join(', ');
+                        
+                        console.log('Submitting application with data:', data);
+                        
+                        // Save the application data
+                        await saveApplicationData(data);
+                        
+                        // Show success message
+                        formMessage.className = 'form-message success';
+                        formMessage.innerHTML = `
+                            <h3>Application Submitted Successfully!</h3>
+                            <p>Thank you for your interest in joining Nervosa Guild. We will review your application and contact you through Discord soon.</p>
+                        `;
+                        form.reset();
+                    } catch (error) {
+                        console.error('Error submitting application:', error);
+                        formMessage.className = 'form-message error';
+                        formMessage.innerHTML = `
+                            <h3>Error Submitting Application</h3>
+                            <p>There was a problem submitting your application: ${error.message}</p>
+                            <p>Please try again later or contact us through Discord.</p>
+                        `;
+                    } finally {
+                        // Re-enable submit button
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Submit Application';
+                    }
+                });
+
+                // Initialize scroll animations
+                const animateOnScroll = () => {
+                    const elements = document.querySelectorAll('.animate-on-scroll');
+                    elements.forEach(element => {
+                        const position = element.getBoundingClientRect();
+                        if (position.top < window.innerHeight) {
+                            element.classList.add('visible');
+                        }
+                    });
+                };
+
+                window.addEventListener('scroll', animateOnScroll);
+                animateOnScroll(); // Initial check
+
+                // Remove loading state
+                document.body.classList.add('loaded');
+
+            } catch (error) {
+                console.error('Error loading contact content:', error);
+                document.body.innerHTML += `<div class="error-message">Error loading content. Please try again later.</div>`;
+            }
+        }
+
+        // Load content when the page loads
+        displayContactContent();
+    </script>
+</body>
+</html> 

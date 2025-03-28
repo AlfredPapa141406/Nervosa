@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nervosa Guild - Home</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--background-color);
+        }
+
+        .logo {
+            flex-shrink: 0;
+        }
+
+        .logo img {
+            height: 192px;
+            width: 192px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0, 225, 255, 0.7)) 
+                   drop-shadow(0 0 20px rgba(0, 225, 255, 0.5));
+            transition: filter 0.3s ease;
+        }
+
+        .logo img:hover {
+            filter: drop-shadow(0 0 15px rgba(0, 225, 255, 0.9)) 
+                   drop-shadow(0 0 30px rgba(0, 225, 255, 0.7));
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            margin-left: auto;
+        }
+
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        nav ul li a.active {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .news-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .news-date {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-title {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid transparent;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .latest-news {
+            padding: 4rem 2rem;
+            background: linear-gradient(
+                180deg,
+                var(--background-color) 0%,
+                rgba(0, 225, 255, 0.05) 50%,
+                var(--background-color) 100%
+            );
+        }
+
+        .latest-news h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px var(--primary-color);
+            position: relative;
+        }
+
+        .latest-news h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .news-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--primary-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 225, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .news-date {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(0, 225, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .news-title {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--primary-color);
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .news-card p {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1200px) {
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .latest-news {
+                padding: 3rem 1rem;
+            }
+
+            .latest-news h2 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* Section Heading Style */
+        .features h2, .latest-news h2 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 10px var(--primary-color);
+            position: relative;
+            text-transform: uppercase;
+        }
+
+        .features h2::after, .latest-news h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* Section Specific Styles */
+        .features, .guild-stats, .latest-news {
+            padding: 4rem 2rem;
+            background: linear-gradient(
+                180deg,
+                var(--background-color) 0%,
+                rgba(0, 225, 255, 0.05) 50%,
+                var(--background-color) 100%
+            );
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .section-heading {
+                font-size: 2rem;
+                letter-spacing: 6px;
+                margin-bottom: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
+            </div>
+            <ul>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="divisions.html">Divisions</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 id="hero-title">NERVOSA</h1>
+                <p id="hero-subtitle" class="hero-text">Elite Gaming Community</p>
+                <div id="hero-stats" class="hero-stats">
+                    <!-- Stats will be loaded dynamically -->
+                </div>
+                <a href="contact.html" id="hero-cta" class="cta-button">Join Now</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2 class="section-heading">Guild Features</h2>
+            <div id="features-grid" class="features-grid">
+                <!-- Features will be loaded here -->
+            </div>
+        </section>
+
+        <section class="guild-stats">
+            <h2 class="section-heading">Guild Statistics</h2>
+            <div id="stats-grid" class="stats-grid">
+                <!-- Stats will be loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="latest-news">
+            <h2 class="section-heading">Latest News</h2>
+            <div id="news-grid" class="news-grid">
+                <!-- News will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="members.html">Members</a></li>
+                    <li><a href="divisions.html">Divisions</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Discord: NervosaGuild</p>
+                <p>Email: contact@nervosaguild.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">YouTube</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Nervosa. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+
+        async function displayHomeContent() {
+            try {
+                const loadingOverlay = document.getElementById('loading');
+                loadingOverlay.classList.remove('hidden');
+
+                // Fetch all data
+                const [hero, features, stats, news] = await Promise.all([
+                    fetchSheetData('Hero'),
+                    fetchSheetData('Features'),
+                    fetchSheetData('Stats'),
+                    fetchSheetData('News')
+                ]);
+
+                // Display hero content
+                if (hero && hero.length > 0) {
+                    const heroData = hero[0]; // Get the first row
+                    document.getElementById('hero-title').textContent = heroData.title || 'NERVOSA';
+                    document.getElementById('hero-subtitle').textContent = heroData.subtitle || 'Elite Gaming Community';
+                    
+                    // Update hero stats
+                    const heroStats = document.getElementById('hero-stats');
+                    heroStats.innerHTML = `
+                        <div class="hero-stat">
+                            <span class="stat-value">${heroData.members_count || '50+'}</span>
+                            <span class="stat-label">${heroData.members_label || 'Active Members'}</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="stat-value">${heroData.mvp_count || '1000+'}</span>
+                            <span class="stat-label">${heroData.mvp_label || 'MVP Kills'}</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="stat-value">${heroData.woe_count || '25+'}</span>
+                            <span class="stat-label">${heroData.woe_label || 'WoE Victories'}</span>
+                        </div>
+                    `;
+
+                    // Update CTA button
+                    const ctaButton = document.getElementById('hero-cta');
+                    ctaButton.textContent = heroData.cta_text || 'Join Now';
+                    ctaButton.href = heroData.cta_link || 'contact.html';
+                }
+
+                // Display features
+                const featuresGrid = document.getElementById('features-grid');
+                if (features && features.length > 0) {
+                    featuresGrid.innerHTML = features.map(feature => `
+                        <div class="feature-card">
+                            <h3>${feature.title}</h3>
+                            <p>${feature.description}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Display stats
+                const statsGrid = document.getElementById('stats-grid');
+                if (stats && stats.length > 0) {
+                    statsGrid.innerHTML = stats.map(stat => `
+                        <div class="stat-card">
+                            <div class="stat-title">${stat.title}</div>
+                            <div class="stat-number">${stat.value}</div>
+                            <div class="stat-description">${stat.description}</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Display news
+                const newsGrid = document.getElementById('news-grid');
+                if (news && news.length > 0) {
+                    newsGrid.innerHTML = news.map(item => `
+                        <div class="news-card">
+                            <div class="news-date">${item.date}</div>
+                            <h3 class="news-title">${item.title}</h3>
+                            <p>${item.content}</p>
+                        </div>
+                    `).join('');
+                }
+
+                loadingOverlay.classList.add('hidden');
+
+            } catch (error) {
+                console.error('Error loading home content:', error);
+                document.getElementById('loading').classList.add('hidden');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = 'Error loading content. Please try again later.';
+                document.body.appendChild(errorDiv);
+            }
+        }
+
+        // Start loading content when the page loads
+        window.addEventListener('DOMContentLoaded', displayHomeContent);
+    </script>
+</body>
+</html>

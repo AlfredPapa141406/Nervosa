@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Divisions Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .log { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .error { background: #fee; color: red; }
+        .success { background: #efe; color: green; }
+        .info { background: #eef; color: blue; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>Simple Divisions Test</h1>
+    <div id="logs"></div>
+
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+        import { CONFIG } from './config.js';
+
+        const logs = document.getElementById('logs');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = message;
+            logs.appendChild(div);
+        }
+
+        async function testConnection() {
+            try {
+                // Log configuration
+                log(`Testing configuration:
+Sheet ID: ${CONFIG.SHEETS_ID}
+API Key: ${CONFIG.API_KEY ? '✓ Present' : '✗ Missing'}
+`);
+
+                // Test direct API access
+                const testUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEETS_ID}/values/Divisions?key=${CONFIG.API_KEY}`;
+                log(`Testing direct API access:
+URL: ${testUrl}
+`);
+
+                const response = await fetch(testUrl);
+                const text = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
+
+                const data = JSON.parse(text);
+                log(`Raw API Response:
+<pre>${JSON.stringify(data, null, 2)}</pre>
+`, 'success');
+
+                // Test through our fetchSheetData function
+                log('Testing through fetchSheetData function...');
+                const divisions = await fetchSheetData('Divisions');
+                
+                log(`Processed Divisions Data:
+<pre>${JSON.stringify(divisions, null, 2)}</pre>
+`, 'success');
+
+                log(`✓ Test completed successfully!`, 'success');
+
+            } catch (error) {
+                log(`Error during test:
+Error: ${error.message}
+Stack: ${error.stack}
+`, 'error');
+            }
+        }
+
+        // Run test when page loads
+        testConnection();
+    </script>
+</body>
+</html> 

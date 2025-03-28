@@ -1,0 +1,120 @@
+NERVOSA GUILD APPLICATION FORM SETUP INSTRUCTIONS
+==============================================
+
+1. GOOGLE SHEETS SETUP
+---------------------
+a. Open your "Nervosa Guild Website Data" spreadsheet
+b. Verify that you have a sheet named "Applications" with these headers:
+   - submission_date
+   - name
+   - class
+   - level
+   - discord
+   - experience
+   - interests
+   - message
+
+2. GOOGLE APPS SCRIPT SETUP
+--------------------------
+a. In your Google Sheet, click "Extensions" > "Apps Script"
+b. Delete any existing code in the script editor
+c. Copy and paste this exact code:
+
+function doPost(e) {
+  try {
+    // Parse the incoming data
+    const data = JSON.parse(e.postData.contents);
+    
+    // Get the Applications sheet
+    const sheet = SpreadsheetApp.getActiveSpreadsheet()
+                               .getSheetByName('Applications');
+    
+    // Format the data for insertion
+    const rowData = [
+      new Date().toISOString(),  // submission_date
+      data.name,                 // name
+      data.class,               // class
+      data.level,               // level
+      data.discord,             // discord
+      data.experience || '',    // experience
+      data.interests,           // interests
+      data.message             // message
+    ];
+    
+    // Append the data
+    sheet.appendRow(rowData);
+    
+    // Return success response
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success',
+      message: 'Application submitted successfully'
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    // Log the error for debugging
+    console.error('Error in doPost:', error);
+    
+    // Return error response
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+3. DEPLOY THE SCRIPT
+-------------------
+a. Click "Deploy" > "New deployment"
+b. Click "Select type" > "Web app"
+c. Fill in the deployment settings:
+   - Description: "Nervosa Guild Application Form Handler"
+   - Execute as: "Me"
+   - Who has access: "Anyone"
+d. Click "Deploy"
+e. If prompted, click "Authorize access"
+f. In the Google authorization window:
+   - Choose your Google account
+   - If you see "Google hasn't verified this app", click "Advanced"
+   - Click "Go to Nervosa Guild Application Form Handler (unsafe)"
+   - Click "Allow"
+g. After authorization, you'll see a URL - COPY THIS URL
+   It will look like: https://script.google.com/macros/s/[long-id]/exec
+
+4. SAVE THE URL
+--------------
+a. Save this URL somewhere safe - you'll need it for the website setup
+b. Share the URL with me to help you update the website code
+
+5. TESTING (After website code update)
+------------------------------------
+a. Open the contact.html page
+b. Fill out the application form with test data:
+   - Character Name: Test Character
+   - Character Class: (select any)
+   - Character Level: 100
+   - Discord Username: Test#1234
+   - Previous Guild Experience: Test application
+   - Select some activities
+   - Message: Test submission
+c. Click Submit
+d. Verify that:
+   - You see a success message
+   - The data appears in your Applications sheet
+
+TROUBLESHOOTING
+--------------
+If you get errors:
+1. Check that the Applications sheet name matches exactly
+2. Verify all column headers are correct
+3. Make sure the script is deployed as a web app
+4. Ensure you authorized the app
+5. Check that "Who has access" is set to "Anyone"
+
+NEED HELP?
+----------
+If you encounter any issues or need assistance:
+1. Save any error messages you see
+2. Note which step you're stuck on
+3. Share this information so I can help you resolve the issue
+
+Remember: Keep the script URL safe - you'll need it to update the website code! 

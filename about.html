@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Nervosa Guild</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="loading"></div>
+    <header>
+        <div class="logo">
+            <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
+        </div>
+        <h1>About Nervosa Guild</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about-content">
+            <div id="guild-history" class="content-section">
+                <h2>Our History</h2>
+                <!-- History content will be loaded here -->
+            </div>
+
+            <div id="guild-mission" class="content-section">
+                <h2>Mission & Values</h2>
+                <!-- Mission content will be loaded here -->
+            </div>
+
+            <div class="achievements">
+                <h2>Guild Achievements</h2>
+                <div id="achievements-grid" class="achievements-grid">
+                    <!-- Achievements will be loaded here -->
+                </div>
+            </div>
+
+            <div class="leadership">
+                <h2>Guild Leadership</h2>
+                <div id="leadership-grid" class="members-grid">
+                    <!-- Leadership will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="members.html">Members</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="contact.html">Join Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Discord: Nervosa Guild</p>
+                <p>Email: contact@nervosaguild.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Nervosa. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="sheets.js"></script>
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+
+        async function displayAboutContent() {
+            try {
+                // Fetch all required data
+                const [about, achievements, leadership] = await Promise.all([
+                    fetchSheetData('About'),
+                    fetchSheetData('Achievements'),
+                    fetchSheetData('Members')
+                ]);
+
+                // Display history
+                const historySection = document.getElementById('guild-history');
+                const history = about.find(section => section.type === 'history');
+                if (history) {
+                    historySection.innerHTML += `
+                        <div class="content-text animate-on-scroll">
+                            ${history.content}
+                        </div>
+                    `;
+                }
+
+                // Display mission
+                const missionSection = document.getElementById('guild-mission');
+                const mission = about.find(section => section.type === 'mission');
+                if (mission) {
+                    missionSection.innerHTML += `
+                        <div class="content-text animate-on-scroll">
+                            ${mission.content}
+                        </div>
+                    `;
+                }
+
+                // Display achievements
+                const achievementsGrid = document.getElementById('achievements-grid');
+                achievementsGrid.innerHTML = achievements.map(achievement => `
+                    <div class="achievement-card animate-on-scroll">
+                        <h3>${achievement.title}</h3>
+                        <p class="achievement-date">${new Date(achievement.date).toLocaleDateString()}</p>
+                        <p>${achievement.description}</p>
+                    </div>
+                `).join('');
+
+                // Display leadership
+                const leadershipGrid = document.getElementById('leadership-grid');
+                console.log('All members:', leadership);
+                const leaders = leadership.filter(member => {
+                    const role = member.role.toLowerCase();
+                    console.log('Checking member:', member.name, 'Role:', member.role);
+                    return role === 'admin' || role === 'guild leader' || role === 'vice guild leader' || role === 'officer';
+                });
+                console.log('Filtered leaders:', leaders);
+
+                // Sort leaders by role importance
+                leaders.sort((a, b) => {
+                    const roleOrder = {
+                        'guild leader': 1,
+                        'vice guild leader': 2,
+                        'admin': 3,
+                        'officer': 4
+                    };
+                    const roleA = a.role.toLowerCase();
+                    const roleB = b.role.toLowerCase();
+                    return (roleOrder[roleA] || 99) - (roleOrder[roleB] || 99);
+                });
+
+                // Function to convert image URLs to direct image URLs
+                function convertImageUrl(url) {
+                    // Default fallback image
+                    const defaultImage = 'images/default-avatar.png';
+                    const fallbackImage = 'https://i.imgur.com/wR44TjF.png';
+                    
+                    // If URL is empty, undefined, or just whitespace
+                    if (!url || url.trim() === '') {
+                        console.warn("Empty image URL, using fallback");
+                        
+                        // Try local fallback first, then online fallback
+                        const img = new Image();
+                        img.src = defaultImage;
+                        if (img.complete) {
+                            return defaultImage;
+                        }
+                        return fallbackImage;
+                    }
+                    
+                    // If URL is a local path to images folder, use as is
+                    if (url.startsWith('images/')) {
+                        console.log("Using local image:", url);
+                        return url;
+                    }
+                    
+                    // For full URLs, use as is
+                    if (url.startsWith('http')) {
+                        console.log("Using direct image URL:", url);
+                        return url;
+                    }
+                    
+                    // For any other case, use the fallback
+                    console.warn("Unrecognized image URL format:", url);
+                    return fallbackImage;
+                }
+
+                // Create HTML for leadership cards
+                leadershipGrid.innerHTML = leaders.map(leader => {
+                    const roleClass = leader.role.toLowerCase().replace(/\s+/g, '-');
+                    console.log(`Processing leader: ${leader.name}, Profile image: ${leader.profile_image}`);
+                    
+                    // If profile_image is undefined or empty, assign a default based on role
+                    let imageUrl = leader.profile_image;
+                    if (!imageUrl || imageUrl.trim() === '') {
+                        // Use the member's class instead of role for default images
+                        if (leader.class) {
+                            imageUrl = `images/${leader.class.replace(/ /g, '')}.png`;
+                            console.log(`Using class-based image for ${leader.name}:`, imageUrl);
+                        } else {
+                            // Fallback to Imgur image if no class is available
+                            imageUrl = 'https://i.imgur.com/wR44TjF.png';
+                            console.log(`No class found for ${leader.name}, using fallback image`);
+                        }
+                    }
+                    
+                    const finalImageUrl = convertImageUrl(imageUrl);
+                    console.log(`Final image URL for ${leader.name}:`, finalImageUrl);
+                    
+                    return `
+                    <div class="member-card leadership animate-on-scroll" data-role="${leader.role.toLowerCase()}">
+                        <img src="${finalImageUrl}" 
+                             crossorigin="anonymous"
+                             referrerpolicy="no-referrer"
+                             onerror="this.onerror=null; this.src='https://i.imgur.com/wR44TjF.png';" 
+                             alt="${leader.name}" 
+                             class="member-avatar">
+                        <h3>${leader.name}</h3>
+                        <p class="member-role">${leader.role}</p>
+                        <p class="member-class">${leader.class}</p>
+                        <p>${leader.description || ''}</p>
+                    </div>`;
+                }).join('');
+
+                // Initialize scroll animations
+                const animateOnScroll = () => {
+                    const elements = document.querySelectorAll('.animate-on-scroll');
+                    elements.forEach(element => {
+                        const position = element.getBoundingClientRect();
+                        if (position.top < window.innerHeight) {
+                            element.classList.add('visible');
+                        }
+                    });
+                };
+
+                window.addEventListener('scroll', animateOnScroll);
+                animateOnScroll(); // Initial check
+
+                // Remove loading state
+                document.body.classList.add('loaded');
+
+            } catch (error) {
+                console.error('Error loading about content:', error);
+                document.body.innerHTML += `<div class="error-message">Error loading content. Please try again later.</div>`;
+            }
+        }
+
+        // Load content when the page loads
+        displayAboutContent();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Nervosa Guild</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="loading"></div>
+    <header>
+        <div class="logo">
+            <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
+        </div>
+        <h1>Nervosa Guild Events</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="events-content">
+            <div class="upcoming-events">
+                <h2>Upcoming Events</h2>
+                <div id="events-calendar" class="events-calendar">
+                    <!-- Events will be loaded here -->
+                </div>
+            </div>
+
+            <div class="weekly-schedule">
+                <h2>Weekly Schedule</h2>
+                <div id="schedule-grid" class="schedule-grid">
+                    <!-- Schedule will be loaded here -->
+                </div>
+            </div>
+
+            <div class="special-events">
+                <h2>Special Events</h2>
+                <div id="special-events" class="event-cards">
+                    <!-- Special events will be loaded here -->
+                </div>
+            </div>
+
+            <div class="past-events">
+                <h2>Past Events</h2>
+                <div id="archive-grid" class="archive-grid">
+                    <!-- Past events will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="members.html">Members</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="contact.html">Join Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Discord: Nervosa Guild</p>
+                <p>Email: contact@nervosaguild.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Nervosa. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="sheets.js"></script>
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+
+        async function displayEvents() {
+            try {
+                // Try to fetch from Google Sheets
+                let events = [];
+                try {
+                    events = await fetchSheetData('Events');
+                    console.log('Events data from sheet:', events);
+                    if (!events || events.length === 0) {
+                        throw new Error('No events data from Google Sheets');
+                    }
+                } catch (sheetError) {
+                    console.warn('Failed to load events from Google Sheets, using local data:', sheetError);
+                    
+                    // Fallback to local CSV
+                    try {
+                        const response = await fetch('events.csv');
+                        const csvText = await response.text();
+                        
+                        // Simple CSV parser
+                        const lines = csvText.split('\n');
+                        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                        
+                        events = lines.slice(1)
+                            .filter(line => line.trim() !== '')
+                            .map(line => {
+                                // Handle commas within quoted fields
+                                const values = [];
+                                let inQuotes = false;
+                                let currentValue = '';
+                                
+                                for (let i = 0; i < line.length; i++) {
+                                    const char = line[i];
+                                    
+                                    if (char === '"') {
+                                        inQuotes = !inQuotes;
+                                        continue;
+                                    }
+                                    
+                                    if (char === ',' && !inQuotes) {
+                                        values.push(currentValue.trim());
+                                        currentValue = '';
+                                        continue;
+                                    }
+                                    
+                                    currentValue += char;
+                                }
+                                
+                                // Push final value
+                                values.push(currentValue.trim());
+                                
+                                const event = {};
+                                headers.forEach((header, index) => {
+                                    event[header] = values[index] ? values[index].trim() : '';
+                                });
+                                return event;
+                            });
+                        console.log('Loaded events from local CSV:', events);
+                    } catch (csvError) {
+                        console.error('Failed to load local events CSV:', csvError);
+                        throw new Error('Could not load events data from any source');
+                    }
+                }
+                
+                // Sort events by date
+                const now = new Date();
+                console.log('Current date:', now);
+                
+                // Filter upcoming events
+                const upcomingEvents = events.filter(e => {
+                    // If we have status field, use it first
+                    if (e.status && e.status.toLowerCase() === 'upcoming') {
+                        return true;
+                    }
+                    // Otherwise use date
+                    return new Date(e.date) >= now;
+                }).sort((a, b) => new Date(a.date) - new Date(b.date));
+                console.log('Upcoming events:', upcomingEvents);
+                
+                // Add example upcoming events if none found
+                let displayUpcomingEvents = upcomingEvents;
+                if (upcomingEvents.length === 0) {
+                    console.log('No upcoming events found, adding example data');
+                    displayUpcomingEvents = [
+                        { title: "MVP Hunt", date: "2024-05-12", time: "20:00", type: "mvp", description: "Weekly MVP hunting party. All levels welcome!" },
+                        { title: "War of Emperium", date: "2024-05-13", time: "21:00", type: "woe", description: "Weekly castle siege. Defend our territory!" },
+                        { title: "Newbie Training", date: "2024-05-15", time: "19:00", type: "training", description: "Training session for new members. Learn game mechanics and strategies." },
+                        { title: "Boss Raid", date: "2024-05-22", time: "21:30", type: "raid", description: "High-level raid against world bosses. Level 90+ recommended." }
+                    ];
+                }
+                
+                // Filter past events
+                const pastEvents = events.filter(e => {
+                    // If we have status field, use it first
+                    if (e.status && e.status.toLowerCase() === 'past') {
+                        return true;
+                    }
+                    // Otherwise use date
+                    return !e.status && new Date(e.date) < now;
+                }).sort((a, b) => new Date(b.date) - new Date(a.date));
+                console.log('Past events:', pastEvents);
+                
+                // Add example past events if none found
+                let displayPastEvents = pastEvents;
+                if (pastEvents.length === 0) {
+                    console.log('No past events found, adding example data');
+                    displayPastEvents = [
+                        { title: "Spring Festival", date: "2024-03-21", time: "18:00", type: "special", description: "Spring celebration with flower-themed quests and rewards" },
+                        { title: "Guild Recruitment Drive", date: "2024-04-01", time: "19:00", type: "special", description: "Special recruitment event with bonuses for new members" },
+                        { title: "Anniversary Planning", date: "2024-04-30", time: "20:00", type: "meeting", description: "Meeting to plan upcoming guild anniversary celebration" },
+                        { title: "PvP Tournament", date: "2024-04-20", time: "19:00", type: "special", description: "Monthly PvP tournament with amazing prizes" }
+                    ];
+                }
+                
+                // Display upcoming events
+                const eventsCalendar = document.getElementById('events-calendar');
+                console.log('Events calendar element:', eventsCalendar);
+                eventsCalendar.innerHTML = displayUpcomingEvents.map(event => `
+                    <div class="event-item ${event.type.toLowerCase()}">
+                        <h4>${event.title}</h4>
+                        <p>${new Date(event.date).toLocaleDateString()} at ${event.time}</p>
+                        <p>${event.description}</p>
+                    </div>
+                `).join('');
+
+                // Display weekly schedule
+                const scheduleGrid = document.getElementById('schedule-grid');
+                // Look for events with recurring=true OR status=weekly
+                const weeklyEvents = events.filter(e => 
+                    e.recurring === 'true' || 
+                    e.recurring === true || 
+                    (e.status && e.status.toLowerCase() === 'weekly')
+                );
+                console.log('Weekly events:', weeklyEvents);
+                
+                // Add reset notice to the weekly schedule section
+                const scheduleNotice = document.createElement('div');
+                scheduleNotice.className = 'schedule-notice';
+                scheduleNotice.textContent = 'All weekly events reset every Sunday.';
+                scheduleGrid.appendChild(scheduleNotice);
+                
+                // Group by day of week
+                const eventsByDay = {};
+                const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                
+                // Initialize all days of the week
+                dayOrder.forEach(day => {
+                    eventsByDay[day] = [];
+                });
+                
+                // If no weekly events found, add example data
+                if (weeklyEvents.length === 0) {
+                    console.log('No weekly events found, adding example data');
+                    const exampleEvents = [
+                        { day: "Monday", title: "Endless Tower", time: "18:00", type: "dungeon", description: "Conquer the Endless Tower! Group gathering to climb as high as possible." },
+                        { day: "Monday", title: "Thanatos Tower", time: "20:30", type: "dungeon", description: "Weekly Thanatos Tower challenge. High-level players only (90+)." },
+                        { day: "Tuesday", title: "Gramps Mission", time: "21:00", type: "quest", description: "Weekly Gramps Mission for rare materials and enchantment items." },
+                        { day: "Tuesday", title: "Item Farming", time: "18:00", type: "farming", description: "Group farming session for rare items and materials." },
+                        { day: "Wednesday", title: "Newbie Training", time: "19:00", type: "training", description: "Training session for new members. Learn game mechanics and strategies." },
+                        { day: "Thursday", title: "Oracle Dungeon", time: "19:30", type: "dungeon", description: "Weekly Oracle Dungeon run. Complete all floors as a guild for special rewards." },
+                        { day: "Friday", title: "Guild Quests", time: "20:00", type: "quest", description: "Complete special guild missions together for rewards." },
+                        { day: "Saturday", title: "MVP Hunt", time: "20:00", type: "mvp", description: "Weekly MVP hunting party. All levels welcome!" },
+                        { day: "Saturday", title: "PvP Practice", time: "19:00", type: "pvp", description: "Practice PvP skills in a controlled environment with guild members." },
+                        { day: "Sunday", title: "War of Emperium", time: "21:00", type: "woe", description: "Weekly castle siege. Defend our territory!" }
+                    ];
+                    
+                    exampleEvents.forEach(event => {
+                        eventsByDay[event.day].push(event);
+                    });
+                } else {
+                    weeklyEvents.forEach(event => {
+                        if (eventsByDay[event.day]) {
+                            eventsByDay[event.day].push(event);
+                        }
+                    });
+                }
+                
+                // Sort events by time for each day
+                for (const day in eventsByDay) {
+                    eventsByDay[day].sort((a, b) => {
+                        const timeA = a.time.split(':').map(Number);
+                        const timeB = b.time.split(':').map(Number);
+                        return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+                    });
+                }
+                
+                // Create a true grid for the weekly schedule
+                const scheduleTable = document.createElement('table');
+                scheduleTable.className = 'schedule-table';
+                
+                // Create header row with days
+                const headerRow = document.createElement('tr');
+                dayOrder.forEach(day => {
+                    const th = document.createElement('th');
+                    th.textContent = day;
+                    headerRow.appendChild(th);
+                });
+                
+                // Create table header
+                const thead = document.createElement('thead');
+                thead.appendChild(headerRow);
+                scheduleTable.appendChild(thead);
+                
+                // Create table body
+                const tbody = document.createElement('tbody');
+                
+                // Find the maximum number of events in a day
+                const maxEvents = Math.max(...Object.values(eventsByDay).map(events => events.length));
+                
+                // Create rows for events
+                for (let i = 0; i < maxEvents; i++) {
+                    const row = document.createElement('tr');
+                    
+                    dayOrder.forEach(day => {
+                        const cell = document.createElement('td');
+                        const event = eventsByDay[day][i];
+                        
+                        if (event) {
+                            cell.innerHTML = `
+                                <div class="schedule-event ${event.type.toLowerCase()}">
+                                    <h4>${event.title}</h4>
+                                    <p class="event-time">${event.time}</p>
+                                    <p class="event-description">${event.description}</p>
+                                </div>
+                            `;
+                        }
+                        
+                        row.appendChild(cell);
+                    });
+                    
+                    tbody.appendChild(row);
+                }
+                
+                scheduleTable.appendChild(tbody);
+                scheduleGrid.appendChild(scheduleTable);
+
+                // Display special events
+                const specialEvents = document.getElementById('special-events');
+                const specialEventsList = events.filter(e => e.type.toLowerCase() === 'special');
+                console.log('Special events:', specialEventsList);
+                
+                // Add example special events if none found
+                let displaySpecialEvents = specialEventsList;
+                if (specialEventsList.length === 0) {
+                    console.log('No special events found, adding example data');
+                    displaySpecialEvents = [
+                        { 
+                            title: "Guild Anniversary", 
+                            date: "2024-06-15", 
+                            time: "20:00", 
+                            type: "special", 
+                            description: "Celebrating our guild's 2nd anniversary with special events and prizes! Join us for games, contests, and exclusive rewards.", 
+                            image: "images/anniversary.jpg",
+                            id: "1"
+                        },
+                        { 
+                            title: "Summer Festival", 
+                            date: "2024-07-20", 
+                            time: "19:00", 
+                            type: "special", 
+                            description: "Annual summer festival with unique quests and limited-time rewards. Don't miss our beach party and water-themed challenges!", 
+                            image: "images/summer.jpg",
+                            id: "2"
+                        },
+                        { 
+                            title: "Halloween Event", 
+                            date: "2024-10-31", 
+                            time: "20:00", 
+                            type: "special", 
+                            description: "Spooky Halloween celebration with costume contests and haunted dungeon runs. Special rewards for the scariest costumes!", 
+                            image: "images/halloween.jpg",
+                            id: "3"
+                        }
+                    ];
+                }
+                
+                specialEvents.innerHTML = displaySpecialEvents.map(event => `
+                    <div class="event-card">
+                        <img src="${event.image || 'images/default-event.jpg'}" alt="${event.title}">
+                        <div class="event-info">
+                            <h3>${event.title}</h3>
+                            <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
+                            <p>${event.description}</p>
+                            <button class="rsvp-button" data-event-id="${event.id}">RSVP Now</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Display past events
+                const archiveGrid = document.getElementById('archive-grid');
+                archiveGrid.innerHTML = displayPastEvents.slice(0, 6).map(event => `
+                    <div class="archive-card">
+                        <h3>${event.title}</h3>
+                        <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
+                        <p>${event.description}</p>
+                    </div>
+                `).join('');
+
+                // Add RSVP functionality
+                document.querySelectorAll('.rsvp-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        alert('RSVP functionality coming soon!');
+                    });
+                });
+
+                // Remove loading state
+                document.body.classList.add('loaded');
+
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.body.innerHTML += `<div class="error-message">Error loading events data. Please try again later.</div>`;
+            }
+        }
+
+        // Load events when the page loads
+        displayEvents();
+    </script>
+</body>
+</html> 

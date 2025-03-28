@@ -1,0 +1,6 @@
+type,title,content,order
+join_info,Join Requirements,"To join Nervosa Guild, you must: Be level 50+, Have a positive attitude, Be active in guild events, Use Discord for communication",1
+contact_method,Discord,Join our Discord server: Nervosa Guild,1
+contact_method,In-Game,Message our Guild Master or Vice Master in-game,2
+contact_method,Email,Contact us at: contact@nervosaguild.com,3
+join_info,Application Process,"Fill out the application form below. We will review your application and contact you within 24 hours.",2 

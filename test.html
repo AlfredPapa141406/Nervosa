@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheet Test</title>
+    <style>
+        .data-display {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .error {
+            color: red;
+            padding: 10px;
+            background: #fee;
+        }
+        .success {
+            color: green;
+            padding: 10px;
+            background: #efe;
+        }
+    </style>
+</head>
+<body>
+    <div id="status"></div>
+    <div id="data-display" class="data-display"></div>
+
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+
+        async function testSheets() {
+            const status = document.getElementById('status');
+            const display = document.getElementById('data-display');
+            
+            try {
+                // Test each sheet
+                const sheets = [
+                    'Members',
+                    'Features',
+                    'News',
+                    'Stats',
+                    'Events',
+                    'About',
+                    'Achievements',
+                    'Divisions',
+                    'Contact',
+                    'Classes',
+                    'Activities'
+                ];
+
+                for (const sheet of sheets) {
+                    try {
+                        const data = await fetchSheetData(sheet);
+                        display.innerHTML += `
+                            <h3>${sheet}</h3>
+                            <pre class="success">${JSON.stringify(data, null, 2)}</pre>
+                        `;
+                    } catch (error) {
+                        display.innerHTML += `
+                            <h3>${sheet}</h3>
+                            <div class="error">Error: ${error.message}</div>
+                        `;
+                    }
+                }
+
+                status.innerHTML = '<div class="success">Testing complete!</div>';
+            } catch (error) {
+                status.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Run tests when page loads
+        testSheets();
+    </script>
+</body>
+</html> 

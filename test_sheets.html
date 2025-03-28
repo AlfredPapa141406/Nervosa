@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheet Connections Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .sheet-test {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f5f5f5;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #eee; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Testing All Sheet Connections</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+        import { CONFIG } from './config.js';
+
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(sheetName, success, data, error = null) {
+            const div = document.createElement('div');
+            div.className = 'sheet-test';
+            div.innerHTML = `
+                <h3>${sheetName}</h3>
+                <p class="${success ? 'success' : 'error'}">
+                    ${success ? '✓ Connected' : '✗ Error: ' + error}
+                </p>
+                ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ''}
+            `;
+            resultsDiv.appendChild(div);
+        }
+
+        async function testAllSheets() {
+            const sheets = Object.values(CONFIG.SHEETS);
+            
+            for (const sheet of sheets) {
+                try {
+                    const data = await fetchSheetData(sheet);
+                    addResult(sheet, true, data);
+                } catch (error) {
+                    addResult(sheet, false, null, error.message);
+                }
+            }
+        }
+
+        // Run tests when page loads
+        testAllSheets();
+    </script>
+</body>
+</html> 

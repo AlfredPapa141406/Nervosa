@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divisions Data Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .division-card {
+            background: white;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .error { 
+            color: red;
+            padding: 10px;
+            background: #fee;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: green;
+            padding: 10px;
+            background: #efe;
+            border-radius: 4px;
+        }
+        .debug {
+            color: blue;
+            padding: 10px;
+            background: #eef;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .divisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .achievements-list {
+            list-style: none;
+            padding: 0;
+        }
+        .achievements-list li {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        .member-count {
+            font-size: 1.5em;
+            color: #2196f3;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Divisions Data Test</h1>
+    <div id="status"></div>
+    <div id="debug"></div>
+    <div id="divisions-grid" class="divisions-grid"></div>
+
+    <script type="module">
+        import { fetchSheetData } from './sheets.js';
+        import { CONFIG } from './config.js';
+
+        async function displayDivisions() {
+            const status = document.getElementById('status');
+            const debug = document.getElementById('debug');
+            const grid = document.getElementById('divisions-grid');
+            
+            try {
+                status.innerHTML = '<div>Loading divisions data...</div>';
+                debug.innerHTML = `<div class="debug">
+Configuration:
+- Sheet ID: ${CONFIG.SHEETS_ID}
+- Sheet Name: ${CONFIG.SHEETS.DIVISIONS}
+- API Key: ${CONFIG.API_KEY ? 'Present' : 'Missing'}
+</div>`;
+
+                const divisions = await fetchSheetData('Divisions');
+                
+                // Debug output of raw data
+                debug.innerHTML += `<div class="debug">
+Raw Data:
+${JSON.stringify(divisions, null, 2)}
+</div>`;
+
+                if (divisions && divisions.length > 0) {
+                    grid.innerHTML = divisions.map(division => `
+                        <div class="division-card">
+                            <h2>${division.name || 'Unnamed Division'}</h2>
+                            <p class="member-count">${division.member_count || 0} Members</p>
+                            <p><strong>Leader:</strong> ${division.leader || 'No Leader Assigned'}</p>
+                            <p>${division.description || 'No description available'}</p>
+                            <h3>Achievements:</h3>
+                            <ul class="achievements-list">
+                                ${(division.achievements || '').split(',').map(achievement => 
+                                    `<li>${achievement.trim()}</li>`
+                                ).join('')}
+                            </ul>
+                        </div>
+                    `).join('');
+                    
+                    status.innerHTML = `<div class="success">Successfully loaded ${divisions.length} divisions!</div>`;
+                } else {
+                    status.innerHTML = '<div class="error">No divisions found in the sheet.</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                status.innerHTML = `<div class="error">Error loading divisions: ${error.message}\n\nStack trace:\n${error.stack}</div>`;
+            }
+        }
+
+        // Load divisions when page loads
+        displayDivisions();
+    </script>
+</body>
+</html> 

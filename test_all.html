@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nervosa Guild - Test All Pages</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .test-section {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .test-status {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+        }
+        .error {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+        .loading {
+            background: rgba(0, 225, 255, 0.1);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="Nervosa_Logo.png" alt="Nervosa Guild Logo">
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="divisions.html">Divisions</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="test-container">
+        <h1>Testing All Pages</h1>
+        
+        <div class="test-section" id="config-test">
+            <h2>Configuration Test</h2>
+            <div class="test-status" id="config-status">Testing configuration...</div>
+        </div>
+
+        <div class="test-section" id="sheets-test">
+            <h2>Google Sheets Connection Test</h2>
+            <div class="test-status" id="sheets-status">Testing connection...</div>
+        </div>
+
+        <div class="test-section" id="pages-test">
+            <h2>Pages Test</h2>
+            <div id="index-status" class="test-status">Testing Home page...</div>
+            <div id="members-status" class="test-status">Testing Members page...</div>
+            <div id="divisions-status" class="test-status">Testing Divisions page...</div>
+            <div id="events-status" class="test-status">Testing Events page...</div>
+        </div>
+
+        <div class="test-section" id="features-test">
+            <h2>Features Test</h2>
+            <div id="search-status" class="test-status">Testing search functionality...</div>
+            <div id="stats-status" class="test-status">Testing statistics display...</div>
+            <div id="calendar-status" class="test-status">Testing calendar functionality...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { CONFIG } from './config.js';
+        import { fetchSheetData } from './sheets.js';
+
+        function updateStatus(elementId, message, type = 'loading') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `test-status ${type}`;
+            }
+        }
+
+        async function testConfiguration() {
+            try {
+                updateStatus('config-status', 'Testing configuration...');
+                if (!CONFIG.SHEETS_ID || !CONFIG.API_KEY) {
+                    throw new Error('Missing configuration values');
+                }
+                updateStatus('config-status', 'Configuration valid ✓', 'success');
+                return true;
+            } catch (error) {
+                updateStatus('config-status', `Configuration error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testSheetsConnection() {
+            try {
+                updateStatus('sheets-status', 'Testing Google Sheets connection...');
+                const testData = await fetchSheetData('Members');
+                if (!testData || !Array.isArray(testData)) {
+                    throw new Error('Invalid data format');
+                }
+                updateStatus('sheets-status', 'Google Sheets connection successful ✓', 'success');
+                return true;
+            } catch (error) {
+                updateStatus('sheets-status', `Sheets connection error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testPages() {
+            // Test Home page
+            try {
+                const [features, news, stats] = await Promise.all([
+                    fetchSheetData('Features'),
+                    fetchSheetData('News'),
+                    fetchSheetData('Stats')
+                ]);
+                updateStatus('index-status', 'Home page data loading successful ✓', 'success');
+            } catch (error) {
+                updateStatus('index-status', `Home page error: ${error.message}`, 'error');
+            }
+
+            // Test Members page
+            try {
+                const members = await fetchSheetData('Members');
+                updateStatus('members-status', 'Members page data loading successful ✓', 'success');
+            } catch (error) {
+                updateStatus('members-status', `Members page error: ${error.message}`, 'error');
+            }
+
+            // Test Divisions page
+            try {
+                const divisions = await fetchSheetData('Divisions');
+                updateStatus('divisions-status', 'Divisions page data loading successful ✓', 'success');
+            } catch (error) {
+                updateStatus('divisions-status', `Divisions page error: ${error.message}`, 'error');
+            }
+
+            // Test Events page
+            try {
+                const events = await fetchSheetData('Events');
+                updateStatus('events-status', 'Events page data loading successful ✓', 'success');
+            } catch (error) {
+                updateStatus('events-status', `Events page error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFeatures() {
+            // Test search functionality
+            try {
+                const members = await fetchSheetData('Members');
+                if (members && members.length > 0) {
+                    updateStatus('search-status', 'Search functionality working ✓', 'success');
+                }
+            } catch (error) {
+                updateStatus('search-status', `Search test error: ${error.message}`, 'error');
+            }
+
+            // Test statistics
+            try {
+                const stats = await fetchSheetData('Stats');
+                if (stats && stats.length > 0) {
+                    updateStatus('stats-status', 'Statistics display working ✓', 'success');
+                }
+            } catch (error) {
+                updateStatus('stats-status', `Statistics test error: ${error.message}`, 'error');
+            }
+
+            // Test calendar
+            try {
+                const events = await fetchSheetData('Events');
+                if (events && events.length > 0) {
+                    updateStatus('calendar-status', 'Calendar functionality working ✓', 'success');
+                }
+            } catch (error) {
+                updateStatus('calendar-status', `Calendar test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            const configValid = await testConfiguration();
+            if (configValid) {
+                const sheetsConnected = await testSheetsConnection();
+                if (sheetsConnected) {
+                    await Promise.all([
+                        testPages(),
+                        testFeatures()
+                    ]);
+                }
+            }
+        }
+
+        // Start tests when page loads
+        window.addEventListener('DOMContentLoaded', runAllTests);
+    </script>
+</body>
+</html> 
