@@ -104,10 +104,17 @@
                 } catch (sheetError) {
                     console.warn('Failed to load events from Google Sheets, using local data:', sheetError);
                     
-                    // Fallback to local CSV
+                    // Try fallback to local CSV
                     try {
                         const response = await fetch('events.csv');
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch CSV: ${response.status} ${response.statusText}`);
+                        }
+                        
                         const csvText = await response.text();
+                        if (!csvText || csvText.trim() === '') {
+                            throw new Error('Empty CSV file');
+                        }
                         
                         // Simple CSV parser
                         const lines = csvText.split('\n');
@@ -148,9 +155,119 @@
                                 return event;
                             });
                         console.log('Loaded events from local CSV:', events);
+                        
+                        if (!events || events.length === 0) {
+                            throw new Error('No events parsed from CSV');
+                        }
                     } catch (csvError) {
-                        console.error('Failed to load local events CSV:', csvError);
-                        throw new Error('Could not load events data from any source');
+                        console.error('Failed to load local events CSV, using hardcoded data:', csvError);
+                        
+                        // Direct fallback data if even CSV fails
+                        events = [
+                            { 
+                                title: "MVP Hunt", 
+                                date: "2024-05-12", 
+                                time: "20:00", 
+                                type: "mvp", 
+                                description: "Weekly MVP hunting party. All levels welcome!",
+                                recurring: "true",
+                                day: "Saturday"
+                            },
+                            { 
+                                title: "War of Emperium", 
+                                date: "2024-05-13", 
+                                time: "21:00", 
+                                type: "woe", 
+                                description: "Weekly castle siege. Defend our territory!",
+                                recurring: "true",
+                                day: "Sunday"
+                            },
+                            { 
+                                title: "Newbie Training", 
+                                date: "2024-05-15", 
+                                time: "19:00", 
+                                type: "training", 
+                                description: "Training session for new members. Learn game mechanics and strategies.",
+                                recurring: "true",
+                                day: "Wednesday"
+                            },
+                            { 
+                                title: "Boss Raid", 
+                                date: "2024-05-22", 
+                                time: "21:30", 
+                                type: "raid", 
+                                description: "High-level raid against world bosses. Level 90+ recommended.",
+                                status: "upcoming"
+                            },
+                            { 
+                                title: "Guild Anniversary", 
+                                date: "2024-06-15", 
+                                time: "20:00", 
+                                type: "special", 
+                                description: "Celebrating our guild's 2nd anniversary with special events and prizes!", 
+                                image: "images/default-event.jpg",
+                                id: "1",
+                                status: "upcoming"
+                            },
+                            { 
+                                title: "Summer Festival", 
+                                date: "2024-07-20", 
+                                time: "19:00", 
+                                type: "special", 
+                                description: "Annual summer festival with unique quests and limited-time rewards.", 
+                                image: "images/default-event.jpg",
+                                id: "2",
+                                status: "upcoming"
+                            },
+                            { 
+                                title: "Spring Festival", 
+                                date: "2024-03-21", 
+                                time: "18:00", 
+                                type: "special", 
+                                description: "Spring celebration with flower-themed quests and rewards",
+                                status: "past"
+                            },
+                            { 
+                                title: "Guild Recruitment Drive", 
+                                date: "2024-04-01", 
+                                time: "19:00", 
+                                type: "special", 
+                                description: "Special recruitment event with bonuses for new members",
+                                status: "past"
+                            },
+                            { 
+                                title: "Endless Tower", 
+                                time: "18:00", 
+                                type: "dungeon", 
+                                description: "Conquer the Endless Tower! Group gathering to climb as high as possible.",
+                                recurring: "true",
+                                day: "Monday"
+                            },
+                            { 
+                                title: "Thanatos Tower", 
+                                time: "20:30", 
+                                type: "dungeon", 
+                                description: "Weekly Thanatos Tower challenge. High-level players only (90+).",
+                                recurring: "true",
+                                day: "Monday"
+                            },
+                            { 
+                                title: "Gramps Mission", 
+                                time: "21:00", 
+                                type: "quest", 
+                                description: "Weekly Gramps Mission for rare materials and enchantment items.",
+                                recurring: "true",
+                                day: "Tuesday"
+                            },
+                            { 
+                                title: "Oracle Dungeon", 
+                                time: "19:30", 
+                                type: "dungeon", 
+                                description: "Weekly Oracle Dungeon run. Complete all floors as a guild for special rewards.",
+                                recurring: "true",
+                                day: "Thursday"
+                            }
+                        ];
                     }
                 }
                 
@@ -328,7 +445,7 @@
 
                 // Display special events
                 const specialEvents = document.getElementById('special-events');
-                const specialEventsList = events.filter(e => e.type.toLowerCase() === 'special');
+                const specialEventsList = events.filter(e => e.type && e.type.toLowerCase() === 'special');
                 console.log('Special events:', specialEventsList);
                 
                 // Add example special events if none found
@@ -342,7 +459,7 @@
                             time: "20:00", 
                             type: "special", 
                             description: "Celebrating our guild's 2nd anniversary with special events and prizes! Join us for games, contests, and exclusive rewards.", 
-                            image: "images/anniversary.jpg",
+                            image: "images/default-event.jpg",
                             id: "1"
                         },
                         { 
@@ -351,7 +468,7 @@
                             time: "19:00", 
                             type: "special", 
                             description: "Annual summer festival with unique quests and limited-time rewards. Don't miss our beach party and water-themed challenges!", 
-                            image: "images/summer.jpg",
+                            image: "images/default-event.jpg",
                             id: "2"
                         },
                         { 
@@ -360,23 +477,35 @@
                             time: "20:00", 
                             type: "special", 
                             description: "Spooky Halloween celebration with costume contests and haunted dungeon runs. Special rewards for the scariest costumes!", 
-                            image: "images/halloween.jpg",
+                            image: "images/default-event.jpg",
                             id: "3"
                         }
                     ];
                 }
                 
-                specialEvents.innerHTML = displaySpecialEvents.map(event => `
+                specialEvents.innerHTML = displaySpecialEvents.map(event => {
+                    // Ensure we have a default image if the image is missing or invalid
+                    let eventImage = event.image || 'images/default-event.jpg';
+                    
+                    // Check if the image is a full URL, if not and starts with images/, use as is
+                    if (!eventImage.startsWith('http') && !eventImage.startsWith('images/')) {
+                        eventImage = 'images/default-event.jpg';
+                    }
+                    
+                    const eventId = event.id || Math.random().toString(36).substring(2, 9);
+                    
+                    return `
                     <div class="event-card">
-                        <img src="${event.image || 'images/default-event.jpg'}" alt="${event.title}">
+                        <img src="${eventImage}" alt="${event.title}"
+                             onerror="this.onerror=null; this.src='images/default-event.jpg';">
                         <div class="event-info">
                             <h3>${event.title}</h3>
                             <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
                             <p>${event.description}</p>
-                            <button class="rsvp-button" data-event-id="${event.id}">RSVP Now</button>
+                            <button class="rsvp-button" data-event-id="${eventId}">RSVP Now</button>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
 
                 // Display past events
                 const archiveGrid = document.getElementById('archive-grid');
