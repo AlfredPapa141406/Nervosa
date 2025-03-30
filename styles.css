@@ -19,51 +19,115 @@ body {
     background-color: var(--background-color);
     line-height: 1.6;
     color: var(--text-color);
+    overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
 }
 
+/* Header Styles */
 header {
-    background: var(--header-bg);
-    color: #fff;
-    padding: 1rem 0;
     text-align: center;
-    border-bottom: 3px solid var(--primary-color);
+    padding: 2rem 0;
+    background: var(--background-color);
 }
 
-nav ul {
-    list-style: none;
-    padding: 0;
+.logo {
+    margin-bottom: 1rem;
 }
 
-nav ul li {
-    display: inline;
-    margin: 0 15px;
+.guild-logo {
+    width: 150px;
+    height: 150px;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
 }
 
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-weight: bold;
+header h1 {
+    color: white;
+    font-size: 2.5rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    margin: 1rem 0;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+/* Main Navigation */
+.main-nav {
+    width: 100%;
+    padding: 1.5rem 0;
+    margin: 2rem 0;
     position: relative;
 }
 
-nav ul li a::after {
+.main-nav::before,
+.main-nav::after {
     content: '';
     position: absolute;
-    bottom: -5px;
     left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--primary-color);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-    box-shadow: 0 0 10px var(--primary-color);
+    right: 0;
+    height: 1px;
+    background: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
 }
 
-nav ul li a:hover::after {
-    transform: scaleX(1);
+.main-nav::before {
+    top: 0;
+}
+
+.main-nav::after {
+    bottom: 0;
+}
+
+.main-nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .guild-logo {
+        width: 120px;
+        height: 120px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .main-nav ul {
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 1rem;
+    }
+
+    .main-nav a {
+        font-size: 1rem;
+    }
+}
+
+/* Remove any conflicting styles */
+.nav-container,
+.home-page nav {
+    display: none;
 }
 
 /* Hero Section */
@@ -233,20 +297,23 @@ nav ul li a:hover::after {
     .hero {
         height: auto;
         min-height: 500px;
-        padding: 4rem 1rem;
+        padding: 2rem 1rem;
     }
 
     .hero h1 {
-        font-size: 3rem;
+        font-size: 2.5rem;
+        letter-spacing: 2px;
     }
 
     .hero-text {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        margin: 1rem 0 2rem;
     }
 
     .hero-stats {
         flex-direction: column;
-        gap: 2rem;
+        gap: 1.5rem;
+        padding: 0 1rem;
     }
 
     .stat-value {
@@ -512,26 +579,6 @@ nav ul li a:hover::after {
     }
 }
 
-/* Logo Styles */
-.logo {
-    margin: 1rem 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.guild-logo {
-    height: 100px;
-    width: auto;
-    filter: drop-shadow(0 0 10px rgba(0, 225, 255, 0.3));
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-.guild-logo:hover {
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 15px rgba(0, 225, 255, 0.5));
-}
-
 /* About Page Styles */
 .about-content {
     max-width: 800px;
@@ -719,6 +766,14 @@ nav ul li a:hover::after {
 .member-card.leadership[data-role="officer"] {
     border: 2px solid #cd7f32; /* Bronze */
     background: linear-gradient(45deg, rgba(205, 127, 50, 0.1), var(--card-bg));
+}
+
+/* Remove hover effects */
+.member-card[data-role="guild leader"]:hover,
+.member-card[data-role="vice guild leader"]:hover,
+.member-card[data-role="admin"]:hover {
+    box-shadow: none;
+    transform: none;
 }
 
 .member-role {
@@ -1700,5 +1755,418 @@ footer {
 @media (max-width: 480px) {
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive Navigation */
+@media (max-width: 768px) {
+    nav ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    nav ul li {
+        display: block;
+        margin: 0.5rem 0;
+    }
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hero {
+        height: auto;
+        min-height: 500px;
+        padding: 2rem 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+
+    .hero-text {
+        font-size: 1rem;
+        margin: 1rem 0 2rem;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .feature-grid,
+    .news-grid,
+    .stats-grid,
+    .achievements-grid,
+    .members-grid,
+    .events-list,
+    .divisions-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .feature-card,
+    .news-card,
+    .stat-card,
+    .achievement-card,
+    .member-card,
+    .event-card,
+    .division-card {
+        width: 100%;
+        margin: 0;
+    }
+
+    .cta-button {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .footer-section {
+        margin-bottom: 2rem;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+}
+
+/* Tablet Responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .feature-grid,
+    .news-grid,
+    .stats-grid,
+    .achievements-grid,
+    .members-grid,
+    .events-list,
+    .divisions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+    }
+}
+
+/* Form Responsiveness */
+@media (max-width: 768px) {
+    .contact-form {
+        padding: 1rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+    }
+}
+
+/* Table Responsiveness */
+@media (max-width: 768px) {
+    .schedule-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+        min-width: 120px;
+    }
+}
+
+/* Image Responsiveness */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Font Size Adjustments for Mobile */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    p { font-size: 1rem; }
+}
+
+/* Mobile Menu Styles */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 24px;
+    position: relative;
+    z-index: 100;
+}
+
+.mobile-menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-color);
+    margin: 5px 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background-color: var(--background-color);
+        padding: 80px 2rem 2rem;
+        transition: right 0.3s ease;
+        z-index: 99;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+        border-left: 1px solid var(--border-color);
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-links li {
+        display: block;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+
+    .nav-links li a {
+        font-size: 1.2rem;
+        display: block;
+        padding: 0.5rem 0;
+    }
+}
+
+/* Global Mobile Padding */
+@media (max-width: 768px) {
+    main {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .hero-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .features,
+    .guild-stats,
+    .latest-news,
+    .about-content,
+    .members-content,
+    .events-content,
+    .contact-content,
+    .divisions-section {
+        padding: 3rem 1.5rem;
+    }
+
+    .feature-grid,
+    .news-grid,
+    .stats-grid,
+    .achievements-grid,
+    .members-grid,
+    .events-list,
+    .divisions-grid {
+        padding: 1rem 1.5rem;
+        margin-right: -0.5rem;
+        margin-left: -0.5rem;
+    }
+
+    .feature-card,
+    .news-card,
+    .stat-card,
+    .achievement-card,
+    .member-card,
+    .event-card,
+    .division-card {
+        margin: 0.5rem;
+        width: calc(100% - 1rem);
+    }
+
+    .contact-form,
+    .search-container,
+    .schedule-table,
+    .footer-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    /* Adjust mobile menu position */
+    .nav-links {
+        padding: 80px 1.5rem 2rem;
+    }
+
+    /* Ensure text content doesn't touch edges */
+    p, h1, h2, h3, h4, h5, h6 {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+
+    /* Adjust form elements */
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: calc(100% - 2rem);
+        margin: 0 1rem;
+    }
+
+    /* Adjust footer sections */
+    .footer-section {
+        padding: 0 1.5rem;
+    }
+
+    /* Ensure social links don't touch edges */
+    .social-links {
+        padding: 0 1rem;
+    }
+}
+
+/* Tablet Adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .features,
+    .guild-stats,
+    .latest-news,
+    .about-content,
+    .members-content,
+    .events-content,
+    .contact-content,
+    .divisions-section {
+        padding: 4rem 2rem;
+    }
+
+    .feature-grid,
+    .news-grid,
+    .stats-grid,
+    .achievements-grid,
+    .members-grid,
+    .events-list,
+    .divisions-grid {
+        padding: 1rem 2rem;
+    }
+}
+
+/* Back button styles */
+.back-button-container {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #00ffff;
+    color: #000;
+}
+
+/* Home page navigation styles */
+.home-page nav {
+    width: 100%;
+    padding: 1rem 0;
+    border-top: 1px solid #00ffff;
+    border-bottom: 1px solid #00ffff;
+    margin: 2rem 0;
+}
+
+.home-page nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.home-page nav a {
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.home-page nav a:hover {
+    color: #00ffff;
+}
+
+/* Update header styles */
+header h1 {
+    color: white;
+    text-align: center;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    margin: 1rem 0;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.guild-logo {
+    max-width: 150px;
+    filter: drop-shadow(0 0 10px #00ffff);
+}
+
+@media (max-width: 768px) {
+    .home-page nav ul {
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .home-page nav a {
+        font-size: 1rem;
     }
 }

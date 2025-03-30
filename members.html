@@ -5,6 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members - Nervosa Guild</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .class-stats {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .total-members {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 225, 255, 0.2);
+        }
+
+        .total-members .count {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .total-members .label {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .class-stats h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .class-stat-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .class-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 225, 255, 0.2);
+        }
+
+        .class-stat-card h3 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .class-count {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .class-stats {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+                padding: 0.5rem;
+            }
+
+            .class-count {
+                font-size: 1.75rem;
+            }
+
+            .total-members .count {
+                font-size: 2.5rem;
+            }
+            
+            .total-members .label {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="loading"></div>
@@ -12,16 +113,10 @@
         <div class="logo">
             <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
         </div>
-        <h1>Nervosa Guild Members</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="members.html">Members</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
+        <h1>Guild Members</h1>
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Home</a>
+        </div>
     </header>
 
     <main>
@@ -30,6 +125,17 @@
                 <h2>Find Members</h2>
                 <input type="text" id="member-search" placeholder="Search by name or class...">
                 <div id="search-results"></div>
+            </div>
+
+            <div class="class-stats">
+                <div class="total-members">
+                    <div class="count" id="total-members-count">0</div>
+                    <div class="label">Total Members</div>
+                </div>
+                <h2>Class Distribution</h2>
+                <div id="class-stats-grid" class="stats-grid">
+                    <!-- Class statistics will be loaded here -->
+                </div>
             </div>
 
             <div class="guild-leadership">
@@ -265,7 +371,7 @@
                     console.log(`Final image URL for ${member.name}:`, finalImageUrl);
                     
                     return `
-                    <div class="member-card leadership" data-role="${roleClass}">
+                    <div class="member-card" data-role="${roleClass}">
                         <img src="${finalImageUrl}" 
                              crossorigin="anonymous"
                              referrerpolicy="no-referrer"
@@ -323,19 +429,66 @@
                 const searchResults = document.getElementById('search-results');
 
                 searchInput.addEventListener('input', (e) => {
-                    const query = e.target.value.toLowerCase();
+                    const query = e.target.value.toLowerCase().trim();
+                    
+                    if (query === '') {
+                        searchResults.innerHTML = '';
+                        leadershipContainer.style.display = '';
+                        divisionsContainer.style.display = '';
+                        return;
+                    }
+
                     const filteredMembers = members.filter(member => 
-                        member.name.toLowerCase().includes(query) ||
-                        member.class.toLowerCase().includes(query)
+                        (member.name && member.name.toLowerCase().includes(query)) ||
+                        (member.class && member.class.toLowerCase().includes(query)) ||
+                        (member.role && member.role.toLowerCase().includes(query))
                     );
 
-                    searchResults.innerHTML = query ? filteredMembers.map(member => `
-                        <div class="search-result">
-                            <h4>${member.name}</h4>
-                            <p>${member.class} - Level ${member.level}</p>
-                        </div>
-                    `).join('') : '';
+                    if (filteredMembers.length > 0) {
+                        searchResults.innerHTML = filteredMembers.map(member => `
+                            <div class="search-result">
+                                <h4>${member.name}</h4>
+                                <p>${member.class} - ${member.role} - Level ${member.level}</p>
+                            </div>
+                        `).join('');
+                        
+                        // Hide the main containers when showing search results
+                        leadershipContainer.style.display = 'none';
+                        divisionsContainer.style.display = 'none';
+                    } else {
+                        searchResults.innerHTML = '<div class="search-result">No members found</div>';
+                        leadershipContainer.style.display = 'none';
+                        divisionsContainer.style.display = 'none';
+                    }
                 });
+
+                // Calculate class statistics
+                const classStats = {};
+                const totalMembers = members.length;
+
+                // Update total members count
+                document.getElementById('total-members-count').textContent = totalMembers;
+
+                // Count members per class
+                members.forEach(member => {
+                    if (member.class) {
+                        classStats[member.class] = (classStats[member.class] || 0) + 1;
+                    }
+                });
+
+                // Display class statistics
+                const statsGrid = document.getElementById('class-stats-grid');
+                statsGrid.innerHTML = Object.entries(classStats)
+                    .sort(([, countA], [, countB]) => countB - countA) // Sort by count in descending order
+                    .map(([className, count]) => {
+                        return `
+                            <div class="class-stat-card">
+                                <h3>${className}</h3>
+                                <div class="class-count">${count}</div>
+                            </div>
+                        `;
+                    })
+                    .join('');
 
                 // Remove loading state
                 document.body.classList.add('loaded');

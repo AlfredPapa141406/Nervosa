@@ -1,0 +1,91 @@
+/* Role-specific styles */
+.member-card[data-role="guild leader"] {
+    border: 2px solid gold;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                radial-gradient(circle at center, rgba(255, 215, 0, 0.15), transparent 70%);
+}
+
+.member-card[data-role="guild leader"] .member-avatar {
+    border: 3px solid gold;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.member-card[data-role="vice guild leader"] {
+    border: 2px solid silver;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+                radial-gradient(circle at center, rgba(192, 192, 192, 0.15), transparent 70%);
+}
+
+.member-card[data-role="vice guild leader"] .member-avatar {
+    border: 3px solid silver;
+    box-shadow: 0 0 20px rgba(192, 192, 192, 0.6);
+}
+
+.member-card[data-role="admin"] {
+    border: 2px solid #cd7f32;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+                radial-gradient(circle at center, rgba(205, 127, 50, 0.15), transparent 70%);
+}
+
+.member-card[data-role="admin"] .member-avatar {
+    border: 3px solid #cd7f32;
+    box-shadow: 0 0 20px rgba(205, 127, 50, 0.6);
+}
+
+/* Hover effects for role-specific cards */
+.member-card[data-role="guild leader"]:hover {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.member-card[data-role="vice guild leader"]:hover {
+    box-shadow: 0 0 30px rgba(192, 192, 192, 0.2);
+}
+
+.member-card[data-role="admin"]:hover {
+    box-shadow: 0 0 30px rgba(205, 127, 50, 0.2);
+}
+
+.member-card[data-role="guild leader"] .member-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+}
+
+.member-card[data-role="vice guild leader"] .member-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(192, 192, 192, 0.8);
+}
+
+.member-card[data-role="admin"] .member-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(205, 127, 50, 0.8);
+}
+
+/* Base member card styles */
+.member-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.member-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .member-card {
+        padding: 1.5rem;
+    }
+
+    .member-avatar {
+        width: 100px;
+        height: 100px;
+    }
+} 

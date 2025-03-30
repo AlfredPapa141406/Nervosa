@@ -1,0 +1,124 @@
+/* Header Styles */
+header {
+    text-align: center;
+    padding: 2rem 0;
+    background: var(--background-color);
+}
+
+.logo {
+    margin-bottom: 1rem;
+}
+
+.guild-logo {
+    width: 150px;
+    height: 150px;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
+}
+
+header h1 {
+    color: white;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    margin: 1rem 0;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+/* Home Page Navigation */
+.main-nav {
+    width: 100%;
+    padding: 1.5rem 0;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.main-nav::before,
+.main-nav::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+.main-nav::before {
+    top: 0;
+}
+
+.main-nav::after {
+    bottom: 0;
+}
+
+.main-nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+/* Back Button for Other Pages */
+.back-button-container {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #00ffff;
+    color: #000;
+}
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+    .guild-logo {
+        width: 120px;
+        height: 120px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .main-nav ul {
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 1rem;
+    }
+
+    .main-nav a {
+        font-size: 1rem;
+    }
+} 

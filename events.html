@@ -12,16 +12,10 @@
         <div class="logo">
             <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
         </div>
-        <h1>Nervosa Guild Events</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="members.html">Members</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
+        <h1>Guild Events</h1>
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Home</a>
+        </div>
     </header>
 
     <main>
@@ -286,18 +280,6 @@
                 }).sort((a, b) => new Date(a.date) - new Date(b.date));
                 console.log('Upcoming events:', upcomingEvents);
                 
-                // Add example upcoming events if none found
-                let displayUpcomingEvents = upcomingEvents;
-                if (upcomingEvents.length === 0) {
-                    console.log('No upcoming events found, adding example data');
-                    displayUpcomingEvents = [
-                        { title: "MVP Hunt", date: "2024-05-12", time: "20:00", type: "mvp", description: "Weekly MVP hunting party. All levels welcome!" },
-                        { title: "War of Emperium", date: "2024-05-13", time: "21:00", type: "woe", description: "Weekly castle siege. Defend our territory!" },
-                        { title: "Newbie Training", date: "2024-05-15", time: "19:00", type: "training", description: "Training session for new members. Learn game mechanics and strategies." },
-                        { title: "Boss Raid", date: "2024-05-22", time: "21:30", type: "raid", description: "High-level raid against world bosses. Level 90+ recommended." }
-                    ];
-                }
-                
                 // Filter past events
                 const pastEvents = events.filter(e => {
                     // If we have status field, use it first
@@ -309,22 +291,10 @@
                 }).sort((a, b) => new Date(b.date) - new Date(a.date));
                 console.log('Past events:', pastEvents);
                 
-                // Add example past events if none found
-                let displayPastEvents = pastEvents;
-                if (pastEvents.length === 0) {
-                    console.log('No past events found, adding example data');
-                    displayPastEvents = [
-                        { title: "Spring Festival", date: "2024-03-21", time: "18:00", type: "special", description: "Spring celebration with flower-themed quests and rewards" },
-                        { title: "Guild Recruitment Drive", date: "2024-04-01", time: "19:00", type: "special", description: "Special recruitment event with bonuses for new members" },
-                        { title: "Anniversary Planning", date: "2024-04-30", time: "20:00", type: "meeting", description: "Meeting to plan upcoming guild anniversary celebration" },
-                        { title: "PvP Tournament", date: "2024-04-20", time: "19:00", type: "special", description: "Monthly PvP tournament with amazing prizes" }
-                    ];
-                }
-                
                 // Display upcoming events
                 const eventsCalendar = document.getElementById('events-calendar');
                 console.log('Events calendar element:', eventsCalendar);
-                eventsCalendar.innerHTML = displayUpcomingEvents.map(event => `
+                eventsCalendar.innerHTML = upcomingEvents.map(event => `
                     <div class="event-item ${event.type.toLowerCase()}">
                         <h4>${event.title}</h4>
                         <p>${new Date(event.date).toLocaleDateString()} at ${event.time}</p>
@@ -345,7 +315,7 @@
                 // Add reset notice to the weekly schedule section
                 const scheduleNotice = document.createElement('div');
                 scheduleNotice.className = 'schedule-notice';
-                scheduleNotice.textContent = 'All weekly events reset every Sunday.';
+                scheduleNotice.textContent = 'All weekly schedule reset every Monday.';
                 scheduleGrid.appendChild(scheduleNotice);
                 
                 // Group by day of week
@@ -357,32 +327,12 @@
                     eventsByDay[day] = [];
                 });
                 
-                // If no weekly events found, add example data
-                if (weeklyEvents.length === 0) {
-                    console.log('No weekly events found, adding example data');
-                    const exampleEvents = [
-                        { day: "Monday", title: "Endless Tower", time: "18:00", type: "dungeon", description: "Conquer the Endless Tower! Group gathering to climb as high as possible." },
-                        { day: "Monday", title: "Thanatos Tower", time: "20:30", type: "dungeon", description: "Weekly Thanatos Tower challenge. High-level players only (90+)." },
-                        { day: "Tuesday", title: "Gramps Mission", time: "21:00", type: "quest", description: "Weekly Gramps Mission for rare materials and enchantment items." },
-                        { day: "Tuesday", title: "Item Farming", time: "18:00", type: "farming", description: "Group farming session for rare items and materials." },
-                        { day: "Wednesday", title: "Newbie Training", time: "19:00", type: "training", description: "Training session for new members. Learn game mechanics and strategies." },
-                        { day: "Thursday", title: "Oracle Dungeon", time: "19:30", type: "dungeon", description: "Weekly Oracle Dungeon run. Complete all floors as a guild for special rewards." },
-                        { day: "Friday", title: "Guild Quests", time: "20:00", type: "quest", description: "Complete special guild missions together for rewards." },
-                        { day: "Saturday", title: "MVP Hunt", time: "20:00", type: "mvp", description: "Weekly MVP hunting party. All levels welcome!" },
-                        { day: "Saturday", title: "PvP Practice", time: "19:00", type: "pvp", description: "Practice PvP skills in a controlled environment with guild members." },
-                        { day: "Sunday", title: "War of Emperium", time: "21:00", type: "woe", description: "Weekly castle siege. Defend our territory!" }
-                    ];
-                    
-                    exampleEvents.forEach(event => {
+                // Add events from Google Sheets to their respective days
+                weeklyEvents.forEach(event => {
+                    if (eventsByDay[event.day]) {
                         eventsByDay[event.day].push(event);
-                    });
-                } else {
-                    weeklyEvents.forEach(event => {
-                        if (eventsByDay[event.day]) {
-                            eventsByDay[event.day].push(event);
-                        }
-                    });
-                }
+                    }
+                });
                 
                 // Sort events by time for each day
                 for (const day in eventsByDay) {
@@ -448,74 +398,47 @@
                 const specialEventsList = events.filter(e => e.type && e.type.toLowerCase() === 'special');
                 console.log('Special events:', specialEventsList);
                 
-                // Add example special events if none found
-                let displaySpecialEvents = specialEventsList;
-                if (specialEventsList.length === 0) {
-                    console.log('No special events found, adding example data');
-                    displaySpecialEvents = [
-                        { 
-                            title: "Guild Anniversary", 
-                            date: "2024-06-15", 
-                            time: "20:00", 
-                            type: "special", 
-                            description: "Celebrating our guild's 2nd anniversary with special events and prizes! Join us for games, contests, and exclusive rewards.", 
-                            image: "images/default-event.jpg",
-                            id: "1"
-                        },
-                        { 
-                            title: "Summer Festival", 
-                            date: "2024-07-20", 
-                            time: "19:00", 
-                            type: "special", 
-                            description: "Annual summer festival with unique quests and limited-time rewards. Don't miss our beach party and water-themed challenges!", 
-                            image: "images/default-event.jpg",
-                            id: "2"
-                        },
-                        { 
-                            title: "Halloween Event", 
-                            date: "2024-10-31", 
-                            time: "20:00", 
-                            type: "special", 
-                            description: "Spooky Halloween celebration with costume contests and haunted dungeon runs. Special rewards for the scariest costumes!", 
-                            image: "images/default-event.jpg",
-                            id: "3"
+                if (specialEventsList.length > 0) {
+                    specialEvents.innerHTML = specialEventsList.map(event => {
+                        // Ensure we have a default image if the image is missing or invalid
+                        let eventImage = event.image || 'images/default-event.jpg';
+                        
+                        // Check if the image is a full URL, if not and starts with images/, use as is
+                        if (!eventImage.startsWith('http') && !eventImage.startsWith('images/')) {
+                            eventImage = 'images/default-event.jpg';
                         }
-                    ];
+                        
+                        const eventId = event.id || Math.random().toString(36).substring(2, 9);
+                        
+                        return `
+                        <div class="event-card">
+                            <img src="${eventImage}" alt="${event.title}"
+                                 onerror="this.onerror=null; this.src='images/default-event.jpg';">
+                            <div class="event-info">
+                                <h3>${event.title}</h3>
+                                <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
+                                <p>${event.description}</p>
+                                <button class="rsvp-button" data-event-id="${eventId}">RSVP Now</button>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    specialEvents.innerHTML = '<div class="no-events">No special events scheduled at this time.</div>';
                 }
-                
-                specialEvents.innerHTML = displaySpecialEvents.map(event => {
-                    // Ensure we have a default image if the image is missing or invalid
-                    let eventImage = event.image || 'images/default-event.jpg';
-                    
-                    // Check if the image is a full URL, if not and starts with images/, use as is
-                    if (!eventImage.startsWith('http') && !eventImage.startsWith('images/')) {
-                        eventImage = 'images/default-event.jpg';
-                    }
-                    
-                    const eventId = event.id || Math.random().toString(36).substring(2, 9);
-                    
-                    return `
-                    <div class="event-card">
-                        <img src="${eventImage}" alt="${event.title}"
-                             onerror="this.onerror=null; this.src='images/default-event.jpg';">
-                        <div class="event-info">
-                            <h3>${event.title}</h3>
-                            <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
-                            <p>${event.description}</p>
-                            <button class="rsvp-button" data-event-id="${eventId}">RSVP Now</button>
-                        </div>
-                    </div>`;
-                }).join('');
 
                 // Display past events
                 const archiveGrid = document.getElementById('archive-grid');
-                archiveGrid.innerHTML = displayPastEvents.slice(0, 6).map(event => `
-                    <div class="archive-card">
-                        <h3>${event.title}</h3>
-                        <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
-                        <p>${event.description}</p>
-                    </div>
-                `).join('');
+                if (pastEvents.length > 0) {
+                    archiveGrid.innerHTML = pastEvents.slice(0, 6).map(event => `
+                        <div class="archive-card">
+                            <h3>${event.title}</h3>
+                            <p class="event-date">${new Date(event.date).toLocaleDateString()}</p>
+                            <p>${event.description}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    archiveGrid.innerHTML = '<div class="no-events">No past events to display.</div>';
+                }
 
                 // Add RSVP functionality
                 document.querySelectorAll('.rsvp-button').forEach(button => {

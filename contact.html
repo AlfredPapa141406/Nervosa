@@ -9,10 +9,10 @@
         .contact-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1rem;
         }
 
-        .contact-form {
+        .contact-section {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--primary-color);
             border-radius: 12px;
@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        .contact-form::before {
+        .contact-section::before {
             content: '';
             position: absolute;
             top: 0;
@@ -34,17 +34,17 @@
             box-shadow: 0 0 15px var(--primary-color);
         }
 
-        .contact-form h2 {
+        .section-title {
             color: var(--primary-color);
             text-align: center;
             font-size: 2rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             text-shadow: 0 0 10px var(--primary-color);
             position: relative;
             text-transform: uppercase;
         }
 
-        .contact-form h2::after {
+        .section-title::after {
             content: '';
             position: absolute;
             bottom: -10px;
@@ -56,115 +56,130 @@
             box-shadow: 0 0 10px var(--primary-color);
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* Add specific width control for character name and discord fields */
-        .form-group:nth-child(1),
-        .form-group:nth-child(3) {
-            grid-column: 1;
-        }
-
-        .form-group:nth-child(2),
-        .form-group:nth-child(4) {
-            grid-column: 2;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .form-group label .required {
-            color: var(--primary-color);
-            margin-left: 0.25rem;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-container {
+            position: relative;
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid rgba(0, 225, 255, 0.3);
-            border-radius: 6px;
-            background: rgba(0, 0, 0, 0.2);
-            color: var(--text-color);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        /* Add right spacing for Discord username field */
-        .form-group input[type="text"]#discord {
-            width: 90%;
-        }
-
-        /* Add right spacing for textareas */
-        .form-group textarea#experience,
-        .form-group textarea#message {
-            width: 95%;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(0, 225, 255, 0.2);
-        }
-
-        .form-group select[multiple] {
-            height: 120px;
-        }
-
-        .form-group select option {
-            padding: 0.5rem;
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .submit-button {
-            grid-column: 1 / -1;
-            padding: 1rem 3rem;
-            background: transparent;
+            height: 1000px;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
             border: 2px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 225, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-container::after {
+            content: 'Click to Apply';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 225, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .form-container:hover::before {
+            opacity: 1;
+        }
+
+        .form-container.loading::after {
+            opacity: 1;
+        }
+
+        .form-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-container.loading iframe {
+            opacity: 0.1;
+        }
+
+        .contact-info {
+            margin-top: 3rem;
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-method {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-method h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .contact-method p {
             color: var(--text-color);
-            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .apply-button-container {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .apply-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            font-size: 1.5rem;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
+            color: var(--text-color);
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
             position: relative;
             overflow: hidden;
-            border-radius: 6px;
-            margin-top: 1rem;
         }
 
-        .submit-button:hover {
-            background: var(--primary-color);
-            color: var(--background-color);
-            box-shadow: 0 0 20px rgba(0, 225, 255, 0.4);
-        }
-
-        .submit-button::before {
+        .apply-button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -174,60 +189,69 @@
             background: linear-gradient(
                 120deg,
                 transparent,
-                rgba(0, 225, 255, 0.4),
+                rgba(0, 225, 255, 0.3),
                 transparent
             );
             transition: 0.5s;
         }
 
-        .submit-button:hover::before {
+        .apply-button:hover {
+            background: rgba(0, 225, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 225, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .apply-button:hover::before {
             left: 100%;
         }
 
-        .form-message {
+        .apply-button:active {
+            transform: translateY(0);
+        }
+
+        /* Remove old form container styles */
+        .form-container,
+        .form-container::before,
+        .form-container::after,
+        .form-container iframe {
             display: none;
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .form-message.success {
-            display: block;
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
-            color: #00ff00;
-        }
-
-        .form-message.error {
-            display: block;
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid #ff0000;
-            color: #ff0000;
         }
 
         @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
+            .contact-content {
+                padding: 0.5rem;
             }
-        }
 
-        .class-description {
-            display: none;
-            margin-top: 0.5rem;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--primary-color);
-            border-radius: 6px;
-        }
-        .class-info {
-            color: var(--text-color);
-        }
-        .class-info p {
-            margin: 0.5rem 0;
-        }
-        .class-info strong {
-            color: var(--primary-color);
+            .contact-section {
+                padding: 1.5rem 1rem;
+                margin: 1rem 0;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-container {
+                height: 1200px;
+                margin: 1rem 0;
+            }
+
+            .form-container::after {
+                font-size: 1.5rem;
+            }
+
+            .contact-methods {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .apply-button {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
@@ -237,79 +261,33 @@
         <div class="logo">
             <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
         </div>
-        <h1>Contact Nervosa Guild</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="members.html">Members</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
+        <h1>Contact Us</h1>
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Home</a>
+        </div>
     </header>
 
     <main>
         <section class="contact-content">
-            <div id="join-info" class="content-section">
-                <h2>Join Our Guild</h2>
-                <!-- Join info will be loaded here -->
+            <div class="contact-section">
+                <h2 class="section-title">Join Our Guild</h2>
+                <div id="join-info" class="content-text animate-on-scroll">
+                    <!-- Join info will be loaded here -->
+                </div>
+                
+                <div class="apply-button-container">
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe8yfGxCbDg69Yoy_zeXFhhCPkcPknSyAAa0m6dSA6k-8SU-A/viewform" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="apply-button">
+                        Click to Apply
+                    </a>
+                </div>
             </div>
 
-            <div class="contact-form">
-                <h2>Application Form</h2>
-                <form id="application-form" class="form-grid">
-                    <div class="form-group">
-                        <label for="name">Character Name <span class="required">*</span></label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="class">Character Class <span class="required">*</span></label>
-                        <select id="class" name="class" required>
-                            <option value="">Select a class</option>
-                            <!-- Classes will be loaded here -->
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="level">Character Level <span class="required">*</span></label>
-                        <input type="number" id="level" name="level" min="1" max="999" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="discord">Discord Username <span class="required">*</span></label>
-                        <input type="text" id="discord" name="discord" placeholder="username#0000" required>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label for="experience">Previous Guild Experience</label>
-                        <textarea id="experience" name="experience" rows="4" 
-                                placeholder="Tell us about your previous guild experience..."></textarea>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label for="interests">Guild Activities Interest <span class="required">*</span></label>
-                        <select id="interests" name="interests" multiple required>
-                            <!-- Interests will be loaded here -->
-                        </select>
-                        <small>Hold Ctrl/Cmd to select multiple activities</small>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label for="message">Why do you want to join Nervosa? <span class="required">*</span></label>
-                        <textarea id="message" name="message" rows="4" required
-                                placeholder="Tell us why you'd like to join our guild..."></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-button">Submit Application</button>
-                </form>
-                <div id="form-message" class="form-message"></div>
-            </div>
-
-            <div class="contact-info">
-                <h2>Other Ways to Contact Us</h2>
-                <div id="contact-methods">
+            <div class="contact-section contact-info">
+                <h2 class="section-title">Other Ways to Contact Us</h2>
+                <div id="contact-methods" class="contact-methods">
                     <!-- Contact methods will be loaded here -->
                 </div>
             </div>
@@ -349,74 +327,19 @@
     <script type="module" src="config.js"></script>
     <script type="module" src="sheets.js"></script>
     <script type="module">
-        import { fetchSheetData, saveApplicationData } from './sheets.js';
+        import { fetchSheetData } from './sheets.js';
 
         async function displayContactContent() {
             try {
-                // Fetch required data
-                const [contact, classes, activities] = await Promise.all([
-                    fetchSheetData('Contact'),
-                    fetchSheetData('Classes'),
-                    fetchSheetData('Activities')
-                ]);
+                // Fetch contact data
+                const contact = await fetchSheetData('Contact');
 
                 // Display join info
                 const joinInfo = document.getElementById('join-info');
                 const info = contact.find(section => section.type === 'join_info');
                 if (info) {
-                    joinInfo.innerHTML += `
-                        <div class="content-text animate-on-scroll">
-                            ${info.content}
-                        </div>
-                    `;
+                    joinInfo.innerHTML = info.content;
                 }
-
-                // Populate class select
-                const classSelect = document.getElementById('class');
-                classSelect.innerHTML = `
-                    <option value="">Select a class</option>
-                    ${classes.map(cls => `
-                        <option value="${cls.name}" 
-                                data-description="${cls.description || ''}" 
-                                data-role="${cls.role || ''}" 
-                                data-specialization="${cls.specialization || ''}">
-                            ${cls.name} - ${cls.role || ''}
-                        </option>
-                    `).join('')}
-                `;
-
-                // Add class description display
-                const classDescription = document.createElement('div');
-                classDescription.id = 'class-description';
-                classDescription.className = 'class-description';
-                classSelect.parentNode.insertBefore(classDescription, classSelect.nextSibling);
-
-                // Add event listener for class selection
-                classSelect.addEventListener('change', (e) => {
-                    const selectedOption = e.target.options[e.target.selectedIndex];
-                    const description = selectedOption.dataset.description;
-                    const role = selectedOption.dataset.role;
-                    const specialization = selectedOption.dataset.specialization;
-                    
-                    if (description || role || specialization) {
-                        classDescription.innerHTML = `
-                            <div class="class-info">
-                                ${role ? `<p><strong>Role:</strong> ${role}</p>` : ''}
-                                ${specialization ? `<p><strong>Specialization:</strong> ${specialization}</p>` : ''}
-                                ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
-                            </div>
-                        `;
-                        classDescription.style.display = 'block';
-                    } else {
-                        classDescription.style.display = 'none';
-                    }
-                });
-
-                // Populate interests select
-                const interestsSelect = document.getElementById('interests');
-                interestsSelect.innerHTML = activities.map(activity => `
-                    <option value="${activity.name}">${activity.name}</option>
-                `).join('');
 
                 // Display contact methods
                 const contactMethods = document.getElementById('contact-methods');
@@ -427,53 +350,6 @@
                         <p>${method.content}</p>
                     </div>
                 `).join('');
-
-                // Handle form submission
-                const form = document.getElementById('application-form');
-                const formMessage = document.getElementById('form-message');
-                const submitButton = form.querySelector('button[type="submit"]');
-
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    try {
-                        // Disable submit button while processing
-                        submitButton.disabled = true;
-                        submitButton.textContent = 'Submitting...';
-                        formMessage.className = 'form-message';
-                        formMessage.innerHTML = 'Submitting application...';
-                        
-                        // Get form data
-                        const formData = new FormData(form);
-                        const data = Object.fromEntries(formData.entries());
-                        data.interests = Array.from(formData.getAll('interests')).join(', ');
-                        
-                        console.log('Submitting application with data:', data);
-                        
-                        // Save the application data
-                        await saveApplicationData(data);
-                        
-                        // Show success message
-                        formMessage.className = 'form-message success';
-                        formMessage.innerHTML = `
-                            <h3>Application Submitted Successfully!</h3>
-                            <p>Thank you for your interest in joining Nervosa Guild. We will review your application and contact you through Discord soon.</p>
-                        `;
-                        form.reset();
-                    } catch (error) {
-                        console.error('Error submitting application:', error);
-                        formMessage.className = 'form-message error';
-                        formMessage.innerHTML = `
-                            <h3>Error Submitting Application</h3>
-                            <p>There was a problem submitting your application: ${error.message}</p>
-                            <p>Please try again later or contact us through Discord.</p>
-                        `;
-                    } finally {
-                        // Re-enable submit button
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Submit Application';
-                    }
-                });
 
                 // Initialize scroll animations
                 const animateOnScroll = () => {

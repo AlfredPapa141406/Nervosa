@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Nervosa Guild</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/about.css">
+    <link rel="stylesheet" href="css/footer.css">
 </head>
 <body>
     <div class="loading"></div>
@@ -13,15 +16,9 @@
             <img src="images/Nervosa_Logo.png" alt="Nervosa Guild Logo" class="guild-logo">
         </div>
         <h1>About Nervosa Guild</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="members.html">Members</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Home</a>
+        </div>
     </header>
 
     <main>
@@ -90,94 +87,20 @@
         async function displayAboutContent() {
             try {
                 // Fetch all required data
-                let about = [];
-                let achievements = [];
-                let leadership = [];
+                let about, achievements, leadership;
                 
-                try {
-                    // Try to fetch from Google Sheets
-                    [about, achievements, leadership] = await Promise.all([
-                        fetchSheetData('About'),
-                        fetchSheetData('Achievements'),
-                        fetchSheetData('Members')
-                    ]);
-                    
-                    console.log('Data from sheets - About:', about, 'Achievements:', achievements, 'Leadership:', leadership);
-                    
-                    // Check if any data is empty
-                    if (!about || about.length === 0 || !achievements || achievements.length === 0 || !leadership || leadership.length === 0) {
-                        throw new Error('Missing data from Google Sheets');
-                    }
-                } catch (sheetError) {
-                    console.warn('Failed to load data from Google Sheets, using local data:', sheetError);
-                    
-                    // Fallback data for about
-                    about = [
-                        {
-                            type: 'history',
-                            content: '<p>Nervosa was founded in 2022 by a group of dedicated players who wanted to create a supportive and competitive environment for all types of players. From humble beginnings with just five members, we have grown into one of the server\'s most respected guilds with over 80 active members.</p><p>Our guild has participated in every War of Emperium since our founding, gradually improving our strategy and teamwork. In 2023, we captured our first castle and have successfully defended it for over 6 months, establishing ourselves as a formidable force on the server.</p>'
-                        },
-                        {
-                            type: 'mission',
-                            content: '<p>Our mission is to create a welcoming community where players of all experience levels can grow and enjoy the game together. We believe in:</p><ul><li><strong>Community First:</strong> Supporting each other both in-game and beyond</li><li><strong>Balanced Gameplay:</strong> Embracing both casual and competitive aspects of the game</li><li><strong>Knowledge Sharing:</strong> Helping new players learn and veterans improve</li><li><strong>Respect:</strong> Maintaining a positive atmosphere free from toxicity</li></ul>'
-                        }
-                    ];
-                    
-                    // Fallback data for achievements
-                    achievements = [
-                        {
-                            title: "First Castle Capture",
-                            date: "2023-06-15",
-                            description: "Successfully captured and held our first WoE castle, marking our emergence as a top-tier guild."
-                        },
-                        {
-                            title: "Server First MVP",
-                            date: "2023-08-22",
-                            description: "Our raid team became the first on the server to defeat the new Immortal Heart MVP boss."
-                        },
-                        {
-                            title: "Community Service Award",
-                            date: "2023-11-10",
-                            description: "Recognized by server administrators for our assistance to new players and positive community impact."
-                        },
-                        {
-                            title: "PvP Tournament Champions",
-                            date: "2024-01-20",
-                            description: "Won the winter server-wide PvP tournament, demonstrating our members' skill and teamwork."
-                        }
-                    ];
-                    
-                    // Fallback data for leadership
-                    leadership = [
-                        {
-                            name: "Lavirosa",
-                            role: "Guild Leader",
-                            class: "Archbishop",
-                            profile_image: "images/Archbishop.png",
-                            description: "Founder and visionary leader of Nervosa. Specializes in support and healing."
-                        },
-                        {
-                            name: "Heist",
-                            role: "Vice Guild Leader",
-                            class: "Royal Guard",
-                            profile_image: "images/RoyalGuard.png",
-                            description: "Primary tank and strategist for guild activities. Manages day-to-day operations."
-                        },
-                        {
-                            name: "Frost",
-                            role: "Admin",
-                            class: "Warlock",
-                            profile_image: "images/Warlock.png",
-                            description: "Technical support and website management. Also leads MVP hunts."
-                        },
-                        {
-                            name: "Shadow",
-                            role: "Officer",
-                            class: "Guillotine Cross",
-                            profile_image: "images/Guillotine Cross.png",
-                            description: "PvP specialist and trainer. Organizes weekly practice sessions."
-                        }
-                    ];
+                // Try to fetch from Google Sheets
+                [about, achievements, leadership] = await Promise.all([
+                    fetchSheetData('About'),
+                    fetchSheetData('Guild Achievement'),
+                    fetchSheetData('Guild Leadership')
+                ]);
+                
+                console.log('Data from sheets - About:', about, 'Achievements:', achievements, 'Leadership:', leadership);
+                
+                // Check if any data is empty
+                if (!about?.length || !achievements?.length || !leadership?.length) {
+                    throw new Error('Missing required data from Google Sheets');
                 }
 
                 // Display history
@@ -187,6 +110,12 @@
                     historySection.innerHTML += `
                         <div class="content-text animate-on-scroll">
                             ${history.content}
+                        </div>
+                    `;
+                } else {
+                    historySection.innerHTML += `
+                        <div class="content-text animate-on-scroll">
+                            <p>No guild history available.</p>
                         </div>
                     `;
                 }
@@ -200,30 +129,39 @@
                             ${mission.content}
                         </div>
                     `;
+                } else {
+                    missionSection.innerHTML += `
+                        <div class="content-text animate-on-scroll">
+                            <p>No mission statement available.</p>
+                        </div>
+                    `;
                 }
 
                 // Display achievements
                 const achievementsGrid = document.getElementById('achievements-grid');
-                achievementsGrid.innerHTML = achievements.map(achievement => `
-                    <div class="achievement-card animate-on-scroll">
-                        <h3>${achievement.title}</h3>
-                        <p class="achievement-date">${new Date(achievement.date).toLocaleDateString()}</p>
-                        <p>${achievement.description}</p>
-                    </div>
-                `).join('');
+                if (achievements && achievements.length > 0) {
+                    achievementsGrid.innerHTML = achievements.map(achievement => `
+                        <div class="achievement-card animate-on-scroll">
+                            <h3>${achievement.title}</h3>
+                            <p class="achievement-date">${new Date(achievement.date).toLocaleDateString()}</p>
+                            <p>${achievement.description}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    achievementsGrid.innerHTML = '<div class="no-achievements">No achievements available.</div>';
+                }
 
                 // Display leadership
                 const leadershipGrid = document.getElementById('leadership-grid');
-                console.log('All members:', leadership);
-                const leaders = leadership.filter(member => {
-                    const role = member.role ? member.role.toLowerCase() : '';
-                    console.log('Checking member:', member.name, 'Role:', member.role);
-                    return role === 'admin' || role === 'guild leader' || role === 'vice guild leader' || role === 'officer';
-                });
-                console.log('Filtered leaders:', leaders);
+                console.log('Leadership data:', leadership);
+
+                if (!leadership || leadership.length === 0) {
+                    leadershipGrid.innerHTML = '<div class="no-leaders">No leadership members available.</div>';
+                    return;
+                }
 
                 // Sort leaders by role importance
-                leaders.sort((a, b) => {
+                leadership.sort((a, b) => {
                     const roleOrder = {
                         'guild leader': 1,
                         'vice guild leader': 2,
@@ -237,76 +175,42 @@
 
                 // Function to convert image URLs to direct image URLs
                 function convertImageUrl(url) {
-                    // Default fallback image
-                    const defaultImage = 'images/default-avatar.png';
-                    const fallbackImage = 'https://i.imgur.com/wR44TjF.png';
-                    
-                    // If URL is empty, undefined, or just whitespace
                     if (!url || url.trim() === '') {
-                        console.warn("Empty image URL, using fallback");
-                        
-                        // Try local fallback first, then online fallback
-                        const img = new Image();
-                        img.src = defaultImage;
-                        if (img.complete) {
-                            return defaultImage;
-                        }
-                        return fallbackImage;
+                        return 'images/Nervosa_Logo.png';
                     }
                     
-                    // If URL is a local path to images folder, use as is
                     if (url.startsWith('images/')) {
-                        console.log("Using local image:", url);
+                        // Add .png extension if no extension exists
+                        if (!url.match(/\.[a-zA-Z]{3,4}$/)) {
+                            // Keep spaces in the filename as they are
+                            return `${url}.png`;
+                        }
                         return url;
                     }
                     
-                    // For full URLs, use as is
-                    if (url.startsWith('http')) {
-                        console.log("Using direct image URL:", url);
-                        return url;
+                    // If it's just a class name, construct the image path
+                    if (url.trim() !== '') {
+                        return `images/${url}.png`;
                     }
                     
-                    // For any other case, use the fallback
-                    console.warn("Unrecognized image URL format:", url);
-                    return fallbackImage;
+                    return 'images/Nervosa_Logo.png';
                 }
 
                 // Create HTML for leadership cards
-                leadershipGrid.innerHTML = leaders.map(leader => {
-                    const roleClass = leader.role ? leader.role.toLowerCase().replace(/\s+/g, '-') : '';
-                    console.log(`Processing leader: ${leader.name}, Profile image: ${leader.profile_image}`);
-                    
-                    // If profile_image is undefined or empty, assign a default based on role
-                    let imageUrl = leader.profile_image;
-                    if (!imageUrl || imageUrl.trim() === '') {
-                        // Use the member's class instead of role for default images
-                        if (leader.class) {
-                            imageUrl = `images/${leader.class}.png`;
-                            console.log(`Using class-based image for ${leader.name}:`, imageUrl);
-                        } else {
-                            // Fallback to Imgur image if no class is available
-                            imageUrl = 'https://i.imgur.com/wR44TjF.png';
-                            console.log(`No class found for ${leader.name}, using fallback image`);
-                        }
-                    }
-                    
-                    const finalImageUrl = convertImageUrl(imageUrl);
-                    console.log(`Final image URL for ${leader.name}:`, finalImageUrl);
-                    
-                    return `
-                    <div class="member-card leadership animate-on-scroll" data-role="${roleClass}">
-                        <img src="${finalImageUrl}" 
-                             crossorigin="anonymous"
-                             referrerpolicy="no-referrer"
-                             onerror="this.onerror=null; this.src='https://i.imgur.com/wR44TjF.png';" 
-                             alt="${leader.name || 'Guild Member'}" 
-                             class="member-avatar">
-                        <h3>${leader.name || 'Guild Member'}</h3>
-                        <p class="member-role">${leader.role || 'Member'}</p>
-                        <p class="member-class">${leader.class || ''}</p>
-                        <p>${leader.description || ''}</p>
-                    </div>`;
-                }).join('');
+                leadershipGrid.innerHTML = leadership.map(leader => `
+                    <div class="member-card" data-role="${leader.role ? leader.role.toLowerCase() : ''}">
+                        <img src="${convertImageUrl(leader.class)}" 
+                             alt="${leader.class} Icon" 
+                             class="member-avatar"
+                             onerror="this.onerror=null; this.src='images/Nervosa_Logo.png';">
+                        <h3>${leader.name}</h3>
+                        <p class="role">${leader.role}</p>
+                        <p class="class">${leader.class}</p>
+                        <p class="level">Level ${leader.level}</p>
+                        <p class="division">${leader.division}</p>
+                        <p class="description">${leader.description || ''}</p>
+                    </div>
+                `).join('');
 
                 // Initialize scroll animations
                 const animateOnScroll = () => {
@@ -326,13 +230,17 @@
                 document.body.classList.add('loaded');
 
             } catch (error) {
-                console.error('Error loading about content:', error);
-                document.body.innerHTML += `<div class="error-message">Error loading content. Please try again later.</div>`;
+                console.error('Error displaying about content:', error);
+                // Show error message to user
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                    mainContent.innerHTML = '<div class="error-message">Unable to load content. Please try again later.</div>';
+                }
             }
         }
 
-        // Load content when the page loads
-        displayAboutContent();
+        // Add event listener when DOM is loaded
+        document.addEventListener('DOMContentLoaded', displayAboutContent);
     </script>
 </body>
 </html> 

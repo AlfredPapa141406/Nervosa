@@ -5,17 +5,18 @@ export const CONFIG = {
     APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwK6404sqhuNgQeKxymyFfB68Lr1ueEvyojvM4Nxafi25CGZxoaII3Y7MP1kBP_mGez_A/exec',
     SHEETS: {
         HERO: 'Hero',
-        FEATURES: 'Features',
-        NEWS: 'News',
-        STATS: 'Stats',
+        FEATURES: 'Guild Features',
+        NEWS: 'Latest News',
+        STATS: 'Guild Statistics',
         EVENTS: 'Events',
         ABOUT: 'About',
-        ACHIEVEMENTS: 'Achievements',
+        ACHIEVEMENTS: 'Guild Achievement',
         MEMBERS: 'Members',
         DIVISIONS: 'Divisions',
         CONTACT: 'Contact',
         CLASSES: 'Classes',
         ACTIVITIES: 'Activities',
-        APPLICATIONS: 'Applications'
+        APPLICATIONS: 'Applications',
+        LEADERSHIP: 'Guild Leadership'
     }
 }; 
