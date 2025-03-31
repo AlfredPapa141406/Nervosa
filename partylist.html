@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nervosa War Party List</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/partylist.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="images/Nervosa_Logo.png" alt="Nervosa Logo">
+            </div>
+            <h1>War Party List</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="about.html">ABOUT</a></li>
+                    <li><a href="members.html">MEMBERS</a></li>
+                    <li><a href="partylist.html" class="active">PARTY LIST</a></li>
+                    <li><a href="events.html">EVENTS</a></li>
+                    <li><a href="contact.html">CONTACT</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="woc">War of Crystal</button>
+                <button class="tab-btn" data-tab="woe">War of Emperium</button>
+            </div>
+
+            <section id="woc-section" class="party-section active">
+                <h2>War of Crystal</h2>
+                <div class="party-grid" id="woc-grid">
+                    <!-- WOC teams will be loaded here -->
+                </div>
+            </section>
+
+            <section id="woe-section" class="party-section">
+                <h2>War of Emperium</h2>
+                <div class="party-grid" id="woe-grid">
+                    <!-- WOE teams will be loaded here -->
+                </div>
+            </section>
+        </main>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="sheets.js"></script>
+    <script type="module">
+        import { CONFIG } from './config.js';
+        import { fetchSheetData } from './sheets.js';
+
+        async function displayPartyList(type) {
+            const grid = document.getElementById(`${type}-grid`);
+            const loading = document.getElementById('loading');
+
+            try {
+                loading.style.display = 'flex';
+                console.log(`Fetching ${type} party list...`);
+                
+                // Get the exact sheet name from CONFIG
+                const sheetName = CONFIG.SHEETS[`${type.toUpperCase()}_PARTY`];
+                console.log(`Using sheet name: ${sheetName}`);
+                
+                const response = await fetchSheetData(sheetName);
+                console.log(`Raw response for ${type}:`, response);
+
+                if (!response || !response.values) {
+                    throw new Error(`No data received from sheet: ${sheetName}`);
+                }
+
+                const teams = processTeamData(response);
+                
+                if (!teams || teams.length === 0) {
+                    throw new Error('No teams found in the data');
+                }
+
+                displayTeams(teams, grid);
+            } catch (error) {
+                console.error(`Error loading ${type} party list:`, error);
+                grid.innerHTML = `
+                    <div class="error">
+                        Failed to load party data. Please try again later.<br>
+                        Error: ${error.message}
+                    </div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function processTeamData(data) {
+            // Log the raw data for debugging
+            console.log('Raw data received:', data);
+            
+            try {
+                // Basic data validation
+                if (!data || !data.values || !Array.isArray(data.values)) {
+                    console.error('Invalid data format:', data);
+                    return [];
+                }
+
+                const rows = data.values;
+                if (rows.length < 2) {
+                    console.error('No data rows found');
+                    return [];
+                }
+
+                // Process rows into teams
+                const teams = new Map();
+                
+                // Skip the header row
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    
+                    // Skip empty rows
+                    if (!row || row.length < 3) continue;
+                    
+                    const [team, player, playerClass] = row;
+                    
+                    // Skip rows with missing data
+                    if (!team || !player || !playerClass) continue;
+                    
+                    // Create team if it doesn't exist
+                    if (!teams.has(team)) {
+                        teams.set(team, {
+                            name: team,
+                            members: []
+                        });
+                    }
+                    
+                    // Add member to team
+                    teams.get(team).members.push({
+                        name: player,
+                        class: playerClass
+                    });
+                }
+
+                // Convert to array and log the result
+                const result = Array.from(teams.values());
+                console.log('Processed teams:', result);
+                return result;
+
+            } catch (error) {
+                console.error('Error processing team data:', error);
+                return [];
+            }
+        }
+
+        function displayTeams(teams, grid) {
+            if (!teams || teams.length === 0) {
+                grid.innerHTML = '<div class="error">No teams found</div>';
+                return;
+            }
+
+            grid.innerHTML = teams.map(team => `
+                <div class="party-card">
+                    <h3 class="party-name">${team.name}</h3>
+                    <ul class="party-members">
+                        ${team.members.map(member => `
+                            <li class="party-member">
+                                <span class="member-name">${member.name}</span>
+                                <span class="member-class ${member.class.toLowerCase()}">${member.class}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab-btn');
+        const sections = document.querySelectorAll('.party-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const type = tab.dataset.tab;
+                
+                // Update active states
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${type}-section`).classList.add('active');
+
+                // Load data for the selected tab
+                displayPartyList(type);
+            });
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            displayPartyList('woc');
+        });
+    </script>
+</body>
+</html>

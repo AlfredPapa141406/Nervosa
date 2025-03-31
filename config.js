@@ -12,11 +12,12 @@ export const CONFIG = {
         ABOUT: 'About',
         ACHIEVEMENTS: 'Guild Achievement',
         MEMBERS: 'Members',
-        DIVISIONS: 'Divisions',
         CONTACT: 'Contact',
         CLASSES: 'Classes',
         ACTIVITIES: 'Activities',
         APPLICATIONS: 'Applications',
-        LEADERSHIP: 'Guild Leadership'
+        LEADERSHIP: 'Guild Leadership',
+        WOC_PARTY: 'WoC Party',  // This is the actual sheet name from your screenshot
+        WOE_PARTY: 'WoE Party'   // This is the actual sheet name from your screenshot
     }
-}; 
+};
