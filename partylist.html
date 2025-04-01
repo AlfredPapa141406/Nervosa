@@ -4,26 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nervosa War Party List</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="./css/partylist.css">
+    <link rel="stylesheet" href="css/styles.css" type="text/css">
+    <link rel="stylesheet" href="css/partylist.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">
-                <img src="images/Nervosa_Logo.png" alt="Nervosa Logo">
+        <header class="main-header">
+            <div class="logo-container">
+                <img src="images/Nervosa_Logo.png" alt="Nervosa Logo" class="glow-logo">
             </div>
-            <h1>War Party List</h1>
-            <nav>
-                <ul>
-                    <li><a href="index.html">HOME</a></li>
-                    <li><a href="about.html">ABOUT</a></li>
-                    <li><a href="members.html">MEMBERS</a></li>
-                    <li><a href="partylist.html" class="active">PARTY LIST</a></li>
-                    <li><a href="events.html">EVENTS</a></li>
-                    <li><a href="contact.html">CONTACT</a></li>
-                </ul>
-            </nav>
+            <h1 class="neon-text">WAR PARTY LIST</h1>
+            <a href="index.html" class="back-button">BACK TO HOME</a>
         </header>
 
         <main>
@@ -102,43 +94,65 @@
             
             try {
                 // Basic data validation
-                if (!data || !data.values || !Array.isArray(data.values)) {
+                if (!data || !Array.isArray(data)) {
                     console.error('Invalid data format:', data);
                     return [];
                 }
 
-                const rows = data.values;
-                if (rows.length < 2) {
+                if (data.length === 0) {
                     console.error('No data rows found');
                     return [];
                 }
 
+                // Log the first row to see the structure
+                console.log('First row structure:', data[0]);
+
                 // Process rows into teams
                 const teams = new Map();
                 
-                // Skip the header row
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
+                // Process each row
+                for (let i = 0; i < data.length; i++) {
+                    const row = data[i];
                     
-                    // Skip empty rows
-                    if (!row || row.length < 3) continue;
+                    // Log each row for debugging
+                    console.log('Processing row:', row);
                     
-                    const [team, player, playerClass] = row;
+                    // Get the field names from the actual data
+                    // Convert field names to lowercase for case-insensitive matching
+                    const rowKeys = Object.keys(row).map(key => key.toLowerCase());
+                    console.log('Row keys:', rowKeys);
                     
-                    // Skip rows with missing data
-                    if (!team || !player || !playerClass) continue;
+                    // Find the correct column names by checking various possibilities
+                    const teamNameKey = rowKeys.find(key => key.includes('team'));
+                    const playerNameKey = rowKeys.find(key => key.includes('player'));
+                    const classKey = rowKeys.find(key => key.includes('class'));
+                    
+                    if (!teamNameKey || !playerNameKey || !classKey) {
+                        console.log('Missing required columns in row:', row);
+                        continue;
+                    }
+                    
+                    const teamName = row[teamNameKey];
+                    const playerName = row[playerNameKey];
+                    const playerClass = row[classKey];
+                    
+                    // Skip empty rows or rows with missing data
+                    if (!teamName || !playerName || !playerClass) {
+                        console.log('Skipping row due to missing values:', row);
+                        continue;
+                    }
                     
                     // Create team if it doesn't exist
-                    if (!teams.has(team)) {
-                        teams.set(team, {
-                            name: team,
+                    if (!teams.has(teamName)) {
+                        teams.set(teamName, {
+                            name: teamName,
                             members: []
                         });
                     }
                     
                     // Add member to team
-                    teams.get(team).members.push({
-                        name: player,
+                    teams.get(teamName).members.push({
+                        name: playerName,
                         class: playerClass
                     });
                 }
@@ -146,15 +160,23 @@
                 // Convert to array and log the result
                 const result = Array.from(teams.values());
                 console.log('Processed teams:', result);
+                
+                if (result.length === 0) {
+                    console.error('No teams were created from the data');
+                }
+                
                 return result;
 
             } catch (error) {
                 console.error('Error processing team data:', error);
+                console.error('Error stack:', error.stack);
                 return [];
             }
         }
 
         function displayTeams(teams, grid) {
+            console.log('Displaying teams:', teams);
+            
             if (!teams || teams.length === 0) {
                 grid.innerHTML = '<div class="error">No teams found</div>';
                 return;
@@ -167,7 +189,7 @@
                         ${team.members.map(member => `
                             <li class="party-member">
                                 <span class="member-name">${member.name}</span>
-                                <span class="member-class ${member.class.toLowerCase()}">${member.class}</span>
+                                <span class="member-class ${member.class.toLowerCase().replace(/\s+/g, '')}">${member.class}</span>
                             </li>
                         `).join('')}
                     </ul>

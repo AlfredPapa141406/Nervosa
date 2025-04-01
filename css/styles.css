@@ -1,3 +1,151 @@
+/* Global styles */
+:root {
+    --primary: #00e1ff;
+    --primary-dark: #00b3cc;
+    --background: #000000;
+    --surface: #000000;
+    --text: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --border: rgba(0, 225, 255, 0.2);
+    --background-color: #000000;
+    --text-color: #ffffff;
+    --accent-color: #00e1ff;
+    --primary-color: #00e1ff;
+    --neon-glow: 0 0 1px #fff,
+                0 0 2px var(--primary),
+                0 0 4px var(--primary);
+}
+
+/* Base styles */
+html, body {
+    background-color: #000000;
+    color: var(--text-color);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #000000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Header styles */
+header, .main-header {
+    background-color: #000000;
+    padding: 2rem 0;
+    text-align: center;
+    position: relative;
+    border-bottom: 2px solid var(--accent-color);
+    margin-bottom: 3rem;
+}
+
+/* Main content area */
+main {
+    background-color: #000000;
+    min-height: 70vh;
+}
+
+/* Section backgrounds */
+section {
+    background-color: #000000;
+}
+
+/* Card backgrounds */
+.card, .member-card, .event-card, .news-card {
+    background-color: #000000;
+    border: 1px solid var(--border);
+}
+
+/* Footer styles */
+footer {
+    background-color: #000000;
+    border-top: 2px solid var(--accent-color);
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+/* Grid and container backgrounds */
+.grid-container, .content-grid {
+    background-color: #000000;
+}
+
+/* Form backgrounds */
+form, input, textarea, select {
+    background-color: #000000;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+input, textarea, select {
+    padding: 0.5rem;
+}
+
+/* Button styles */
+button, .button {
+    background-color: transparent;
+    border: 2px solid var(--primary);
+    color: var(--text);
+    padding: 0.8rem 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover, .button:hover {
+    background-color: var(--primary);
+    color: #000000;
+}
+
+/* Modal or popup backgrounds */
+.modal, .popup {
+    background-color: #000000;
+    border: 1px solid var(--border);
+}
+
+/* Table styles */
+table {
+    background-color: #000000;
+}
+
+tr, td, th {
+    border-color: var(--border);
+}
+
+/* Override any light backgrounds */
+[class*="background"], [class*="bg-"] {
+    background-color: #000000 !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+/* Selection color */
+::selection {
+    background: var(--primary);
+    color: #000000;
+}
+
+/* Placeholder color */
+::placeholder {
+    color: var(--text-secondary);
+}
+
 /* Role-specific styles */
 .member-card[data-role="guild leader"] {
     border: 2px solid gold;

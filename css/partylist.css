@@ -2,59 +2,113 @@
 :root {
     --primary: #00e1ff;
     --primary-dark: #00b3cc;
-    --background: #1a1a1a;
-    --surface: #2d2d2d;
+    --background: #000000;
+    --surface: #000000;
     --text: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --border: rgba(0, 225, 255, 0.2);
+    --background-color: #000000;
+    --text-color: #ffffff;
+    --accent-color: #00e1ff;
+    --primary-color: #00e1ff;
+    --neon-glow: 0 0 1px #fff,
+                0 0 2px var(--primary),
+                0 0 4px var(--primary);
 }
 
+/* Update body background and text color */
 body {
-    background-color: var(--background);
-    color: var(--text);
+    background-color: #000000;
+    color: var(--text-color);
     font-family: 'Segoe UI', system-ui, sans-serif;
     line-height: 1.5;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0;
+    background-color: #000000;
 }
 
 /* Header Styles */
-header {
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/header-bg.jpg');
-    background-size: cover;
-    background-position: center;
+.main-header {
+    background-color: #000000;
     padding: 2rem 0;
     text-align: center;
+    position: relative;
+    border-bottom: 2px solid var(--accent-color);
     margin-bottom: 3rem;
-    border-bottom: 2px solid var(--primary);
 }
 
-.logo {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 1.5rem;
+.logo-container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 2rem;
+    position: relative;
 }
 
-.logo img {
+.glow-logo {
     width: 100%;
     height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 0 15px var(--primary));
+    animation: pulse 2s infinite;
 }
 
-h1 {
-    font-size: 3rem;
-    color: var(--primary);
+.neon-text {
+    font-size: 2.5rem;
+    color: var(--text);
     text-transform: uppercase;
-    letter-spacing: 3px;
-    margin: 0;
-    text-shadow: 0 0 10px rgba(0, 225, 255, 0.5);
+    letter-spacing: 0.15em;
+    margin: 0 0 2rem;
+    font-weight: bold;
+    text-shadow: var(--neon-glow);
+    animation: none;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    color: var(--text);
+    text-decoration: none;
+    border: 2px solid var(--primary);
+    border-radius: 4px;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    background: transparent;
+}
+
+.back-button:hover {
+    background: var(--primary);
+    color: var(--background);
+    box-shadow: 0 0 20px var(--primary);
+    transform: translateY(-2px);
+}
+
+@keyframes pulse {
+    0% {
+        filter: drop-shadow(0 0 15px var(--primary));
+    }
+    50% {
+        filter: drop-shadow(0 0 30px var(--primary));
+    }
+    100% {
+        filter: drop-shadow(0 0 15px var(--primary));
+    }
+}
+
+@keyframes flicker {
+    0%, 100% {
+        text-shadow: var(--neon-glow);
+    }
 }
 
 /* Navigation */
@@ -109,8 +163,8 @@ nav a.active {
 
 .tab-btn:hover,
 .tab-btn.active {
-    background: var(--primary);
-    color: var(--background);
+    background: var(--accent-color);
+    color: var(--background-color);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 225, 255, 0.3);
 }
@@ -144,7 +198,7 @@ nav a.active {
 }
 
 .party-card {
-    background: linear-gradient(145deg, var(--surface), #363636);
+    background: #000000;
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 2rem;
@@ -155,7 +209,7 @@ nav a.active {
 .party-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 225, 255, 0.2);
-    border-color: var(--primary);
+    border-color: var(--accent-color);
 }
 
 .party-name {
@@ -197,14 +251,27 @@ nav a.active {
 }
 
 .member-class {
-    color: var(--primary);
-    font-size: 0.9rem;
-    padding: 0.4rem 1rem;
-    background: rgba(0, 225, 255, 0.1);
-    border-radius: 20px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    color: var(--text) !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1));
 }
+
+/* Class-specific background colors */
+.archbishop { background-color: rgba(255, 215, 0, 0.2); }
+.genetic { background-color: rgba(152, 251, 152, 0.2); }
+.guillotinecross { background-color: rgba(255, 69, 0, 0.2); }
+.mechanic { background-color: rgba(65, 105, 225, 0.2); }
+.minstrel { background-color: rgba(147, 112, 219, 0.2); }
+.ranger { background-color: rgba(50, 205, 50, 0.2); }
+.royalguard { background-color: rgba(184, 134, 11, 0.2); }
+.runeknight { background-color: rgba(220, 20, 60, 0.2); }
+.shadowchaser { background-color: rgba(72, 61, 139, 0.2); }
+.shura { background-color: rgba(255, 99, 71, 0.2); }
+.sorcerer { background-color: rgba(138, 43, 226, 0.2); }
+.wanderer { background-color: rgba(32, 178, 170, 0.2); }
+.warlock { background-color: rgba(153, 50, 204, 0.2); }
+.sage { background-color: rgba(221, 160, 221, 0.2); }
 
 /* Loading Animation */
 .loading {
@@ -282,6 +349,10 @@ nav a.active {
     .member-name {
         font-size: 1rem;
     }
+
+    .neon-text {
+        font-size: 2rem;
+    }
 }
 
 /* Class-specific colors */
@@ -293,8 +364,31 @@ nav a.active {
 .ranger { color: #32CD32; }
 .royalguard { color: #B8860B; }
 .runeknight { color: #DC143C; }
-.shadowchase { color: #483D8B; }
+.shadowchaser { color: #483D8B; }
 .shura { color: #FF6347; }
 .sorcerer { color: #8A2BE2; }
 .wanderer { color: #20B2AA; }
 .warlock { color: #9932CC; }
+.sage { color: #DDA0DD; }
+.professor { color: #9370DB; }
+.champion { color: #FF6347; }
+.paladin { color: #DAA520; }
+.crusader { color: #CD853F; }
+.monk { color: #FF8C00; }
+.priest { color: #FFD700; }
+.huntress { color: #32CD32; }
+.sniper { color: #228B22; }
+.assassincross { color: #8B0000; }
+.stalker { color: #4B0082; }
+.creator { color: #20B2AA; }
+.whitesmith { color: #4682B4; }
+.highwizard { color: #9400D3; }
+.clown { color: #FF1493; }
+.gypsy { color: #FF69B4; }
+.highpriest { color: #FFD700; }
+.lordknight { color: #8B0000; }
+.assassinx { color: #800000; }
+.mastersmith { color: #4169E1; }
+.highwizard { color: #8A2BE2; }
+.clown { color: #FF69B4; }
+.gypsy { color: #DDA0DD; }
